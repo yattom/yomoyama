@@ -1,6 +1,8 @@
-from trans_server import app
+#coding: utf8
 
-from codecs import open
+from flask import render_template
+from trans_server import app
+from text import Text
 
 @app.route('/about')
 def about():
@@ -17,7 +19,6 @@ def index():
 
 @app.route('/text/<text_id>')
 def text(text_id):
-    f = open(app.config['TEXT_DIR'] + '/' + text_id, encoding='utf8')
-    lines = f.readlines()
-    return '<br>'.join(lines)
+    text = Text(app.config['TEXT_DIR'] + '/' + text_id)
+    return render_template('text.html', text_id=text_id, text=text)
 

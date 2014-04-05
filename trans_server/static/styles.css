@@ -1,0 +1,20 @@
+div {
+	display: block;
+	clear: both;
+	width: 800px;
+	padding: 16px;
+}
+
+.en {
+	display: inline;
+	float: right;
+	margin: 0;
+	width: 48%;
+	color: blue;
+}
+
+.ja {
+	width: 48%;
+	color: black;
+	margin: 0;
+}
