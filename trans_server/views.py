@@ -8,9 +8,8 @@ from text import Text
 def about():
     lines = []
     lines.append('trans_server:')
-    lines.append('__name__=%s'%(__name__))
-    lines.append('app.config["DEBUG"]=%s'%(app.config['DEBUG']))
-    lines.append('app.config["TEXT_DIR"]=%s'%(app.config['TEXT_DIR']))
+    for f in ['__name__', 'app.config["DEBUG"]', 'app.config["TEXT_DIR"]']:
+        lines.append('%s = %s'%(f, repr(eval(f))))
     return '<br>'.join(lines)
 
 @app.route('/')
@@ -21,4 +20,8 @@ def index():
 def text(text_id):
     text = Text(app.config['TEXT_DIR'] + '/' + text_id)
     return render_template('text.html', text_id=text_id, text=text)
+
+@app.route('/text/<text_id>/paragraphs/<p_id>', methods=['GET', 'PUT'])
+def paragraph(text_id, p_id):
+    return 'ok'
 

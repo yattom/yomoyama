@@ -1,11 +1,11 @@
-div {
+div.paragraph {
 	display: block;
 	clear: both;
 	width: 800px;
 	padding: 16px;
 }
 
-.en {
+div.en {
 	display: inline;
 	float: right;
 	margin: 0;
@@ -13,8 +13,16 @@ div {
 	color: blue;
 }
 
-.ja {
+div.ja {
 	width: 48%;
 	color: black;
 	margin: 0;
+}
+
+p {
+    margin: 0;
+}
+
+textarea {
+    width: 100%;
 }

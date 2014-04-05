@@ -1,21 +1,34 @@
 <!doctype html>
 <head>
 <title>{{text_id}}</title>
-<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles/styles.css') }}">
+<script type="text/javascript" src="{{ url_for('static', filename='scripts/jquery-2.1.0.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='scripts/jquery.flexibleArea.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='scripts/text.js') }}"></script>
 </head>
 <body>
 {% for paragraph in text.paragraphs %}
-  <div>
-    <p class="en">
+  <div class="paragraph" data-p-id="{{ paragraph.id }}">
+    <div class="en">
     {% for l in paragraph.original_lines %}
       {{ l }}<br>
     {% endfor %}
-    </p>
-    <p class="ja">
-    {% for l in paragraph.translated_lines %}
-      {{ l }}<br>
-    {% endfor %}
-    </p>
+    </div>
+    <div class="ja">
+      <div class="display">
+        <p>{% for l in paragraph.translated_lines %}
+{{ l }}<br>
+{% endfor %}
+        </p>
+        <span class="edit" data-p-id="{{ paragraph.id }}">Edit</span>
+      </div>
+      <div class="editor">
+        <textarea>{% for l in paragraph.translated_lines %}
+{{ l }}
+{% endfor %}</textarea>
+        <span class="save" data-p-id="{{ paragraph.id }}">Save</span>
+      </div>
+    </div>
   </div>
 {% endfor %}
 </body>

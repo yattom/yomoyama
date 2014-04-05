@@ -25,6 +25,7 @@ class Paragraph(object):
     def __init__(self):
         self.original_lines = []
         self.translated_lines = []
+        self.id = id(self)
 
     def append_translated(self, line):
         self.translated_lines.append(line)
