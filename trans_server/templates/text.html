@@ -10,22 +10,19 @@
 {% for paragraph in text.paragraphs %}
   <div class="paragraph" data-p-id="{{ paragraph.id }}">
     <div class="en">
-    {% for l in paragraph.original_lines %}
-      {{ l }}<br>
-    {% endfor %}
+      {{ paragraph.original_text() }}
     </div>
     <div class="ja">
       <div class="display">
-        <p>{% for l in paragraph.translated_lines %}
-{{ l }}<br>
-{% endfor %}
+        <p>
+          {% for l in paragraph.translated_text().split('\n') %}
+            {{ l }}<br>
+          {% endfor %}
         </p>
         <span class="edit" data-p-id="{{ paragraph.id }}">Edit</span>
       </div>
       <div class="editor">
-        <textarea>{% for l in paragraph.translated_lines %}
-{{ l }}
-{% endfor %}</textarea>
+        <textarea>{{ paragraph.translated_text() }}</textarea>
         <span class="save" data-p-id="{{ paragraph.id }}">Save</span>
       </div>
     </div>
