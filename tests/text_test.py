@@ -48,13 +48,6 @@ English Line 3.
 '''.encode('utf-8'), 'a paragraph of multi lines'),
 }
 
-class TextLoadAndSaveTest(unittest.TestCase):
-    '''
-    Text must save contents exactly same as loaded.
-    '''
-    def test_load_and_save(self):
-        for key in TEXT_FOR_TESTS:
-            assert_load_and_save(key)
 
 
 class TextTest(unittest.TestCase):
@@ -66,3 +59,9 @@ class TextTest(unittest.TestCase):
         assert_that(t.paragraphs[1].original_text(), is_('EnglishLine2.\n'))
         assert_that(t.paragraphs[1].translated_text(), is_(''))
 
+    def test_load_and_save(self):
+        '''
+        Text must save contents exactly same as loaded.
+        '''
+        for key in TEXT_FOR_TESTS:
+            assert_load_and_save(key)
