@@ -31,7 +31,12 @@ def load_data(name):
         f.unlink(f.name)
 
 TEXT_FOR_TESTS = {
-    'multi_para': (u'EnglishLine.\n日本語の行\n\nEnglishLine2.\n\n'.encode('utf-8'), 'multi paragraphs of single lines'),
+    'multi_para': (
+u'''EnglishLine.
+日本語の行
+
+EnglishLine2.
+'''.encode('utf-8'), 'multi paragraphs of single lines'),
     'multi_line': (
 u'''
 English Line 1.
@@ -40,15 +45,16 @@ English Line 3.
 日本語の行1。
 日本語の行2。
 日本語の行3。
-'''),
+'''.encode('utf-8'), 'a paragraph of multi lines'),
 }
 
 class TextLoadAndSaveTest(unittest.TestCase):
     '''
     Text must save contents exactly same as loaded.
     '''
-    def test_multiparagraphs(self):
-        assert_load_and_save('multi_para')
+    def test_load_and_save(self):
+        for key in TEXT_FOR_TESTS:
+            assert_load_and_save(key)
 
 
 class TextTest(unittest.TestCase):
