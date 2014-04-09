@@ -3,6 +3,8 @@ lib/
 include/
 man/
 local/
+data/
+local_config.py
 *.pyc
 *.pyo
 *~
