@@ -19,6 +19,8 @@ class Text(object):
             lines.append((head, len(self.data)))
 
         paragraph = None
+        original_span = [0, 0]
+        translated_span = [0, 0]
         for (head, tail) in lines:
             l = self.data[head:tail]
             if not paragraph: paragraph = Paragraph(self)
@@ -26,14 +28,22 @@ class Text(object):
             if len(l) == 0:
                 if paragraph:
                     self.paragraphs.append(paragraph)
+                    paragraph.append_original(*original_span)
+                    paragraph.append_translated(*translated_span)
                 paragraph = None
+                original_span = [tail, tail]
+                translated_span = [tail, tail]
                 continue
             if Text.is_translated(l):
-                paragraph.append_translated(head, tail)
+                if translated_span[0] < original_span[1]:
+                    translated_span[0] = head
+                translated_span[1] = tail
             else:
-                paragraph.append_original(head, tail)
+                original_span[1] = tail
         if paragraph:
             self.paragraphs.append(paragraph)
+            paragraph.append_original(*original_span)
+            paragraph.append_translated(*translated_span)
 
     @staticmethod
     def is_translated(line):
@@ -85,8 +95,11 @@ class TextFragment(object):
         self.head = head
         self.tail = tail
 
-    def __str__(self):
+    def value(self):
         return self.text.data[self.head:self.tail]
+
+    def __str__(self):
+        return self.val()
 
     def update(self, newtext):
         self.text.data = self.text.data[:self.head] + newtext + self.text.data[self.tail:]
@@ -100,7 +113,7 @@ class TextFragment(object):
 
     def __eq__(self, other):
         '''
-        Enables to compare with str/unicode.  Convenient in tests.
+        Enables comparing with str/unicode.  Convenient in tests.
         '''
         if isinstance(other, TextFragment):
             return (self.text == other.text and self.head == other.head and self.tail == other.tail)

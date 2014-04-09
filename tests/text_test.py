@@ -52,10 +52,10 @@ class TextTest(unittest.TestCase):
     def test_load_multi_para(self):
         t = load_data('multi_para')
         assert_that(len(t.paragraphs), is_(2))
-        assert_that(t.paragraphs[0].original(), is_('EnglishLine.\n'))
+        assert_that(t.paragraphs[0].original(), is_(u'EnglishLine.\n'))
         assert_that(t.paragraphs[0].translated(), is_(u'日本語の行\n'))
         assert_that(t.paragraphs[1].original(), is_('EnglishLine2.\n'))
-        assert_that(t.paragraphs[1].translated(), is_(None))
+        assert_that(t.paragraphs[1].translated(), is_(''))
 
     def test_update_shorter(self):
         t = load_data('multi_para')
