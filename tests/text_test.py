@@ -48,16 +48,26 @@ English Line 3.
 '''.encode('utf-8'), 'a paragraph of multi lines'),
 }
 
-
-
 class TextTest(unittest.TestCase):
     def test_load_multi_para(self):
         t = load_data('multi_para')
         assert_that(len(t.paragraphs), is_(2))
-        assert_that(t.paragraphs[0].original_text(), is_('EnglishLine.\n'))
-        assert_that(t.paragraphs[0].translated_text(), is_(u'日本語の行\n'))
-        assert_that(t.paragraphs[1].original_text(), is_('EnglishLine2.\n'))
-        assert_that(t.paragraphs[1].translated_text(), is_(''))
+        assert_that(t.paragraphs[0].original(), is_('EnglishLine.\n'))
+        assert_that(t.paragraphs[0].translated(), is_(u'日本語の行\n'))
+        assert_that(t.paragraphs[1].original(), is_('EnglishLine2.\n'))
+        assert_that(t.paragraphs[1].translated(), is_(None))
+
+    def test_update_shorter(self):
+        t = load_data('multi_para')
+        t.paragraphs[0].translated().update(u'更新\n')
+        assert_that(t.paragraphs[0].translated(), is_(u'更新\n'))
+        assert_that(t.paragraphs[1].original(), is_('EnglishLine2.\n'))
+
+    def test_update_longer(self):
+        t = load_data('multi_para')
+        t.paragraphs[0].translated().update(u'長い内容で更新した行。\n')
+        assert_that(t.paragraphs[0].translated(), is_(u'長い内容で更新した行。\n'))
+        assert_that(t.paragraphs[1].original(), is_('EnglishLine2.\n'))
 
     def test_load_and_save(self):
         '''

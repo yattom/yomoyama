@@ -5,6 +5,7 @@ class Text(object):
     def __init__(self, path):
         self.path = path
         self.paragraphs = []
+        self.fragments = []
         with open(path, encoding='utf8') as f:
             self.data = f.read()
 
@@ -42,32 +43,65 @@ class Text(object):
         with open(self.path, 'wb', encoding='utf8') as f:
             f.write(self.data)
 
+    def fragment(self, head, tail):
+        f = TextFragment(self, head, tail)
+        self.fragments.append(f)
+        return f
+
 
 class Paragraph(object):
     def __init__(self, text):
         self.text = text
-        self.original = None
-        self.translated = None
+        self._original = None
+        self._translated = None
         self.id = id(self)
 
     def append_translated(self, head, tail):
-        if not self.translated:
-            self.translated = (head, tail)
+        if not self._translated:
+            self._translated = self.text.fragment(head, tail)
             return
-        assert head == self.translated[1]
-        self.translated = (self.translated[0], tail)
+        assert head == self._translated.tail
+        self._translated = self.text.fragment(self._translated.head, tail)
 
     def append_original(self, head, tail):
-        if not self.original:
-            self.original = (head, tail)
+        if not self._original:
+            self._original = self.text.fragment(head, tail)
             return
-        assert head == self.original[1]
-        self.original = (self.original[0], tail)
+        assert head == self._original.tail
+        self._original = self.text.fragment(self._original.head, tail)
 
-    def original_text(self):
-        if not self.original: return ''
-        return self.text.data[self.original[0]:self.original[1]]
+    def original(self):
+        if not self._original: return None
+        return self._original
 
-    def translated_text(self):
-        if not self.translated: return ''
-        return self.text.data[self.translated[0]:self.translated[1]]
+    def translated(self):
+        if not self._translated: return None
+        return self._translated
+
+
+class TextFragment(object):
+    def __init__(self, text, head, tail):
+        self.text = text
+        self.head = head
+        self.tail = tail
+
+    def __str__(self):
+        return self.text.data[self.head:self.tail]
+
+    def update(self, newtext):
+        self.text.data = self.text.data[:self.head] + newtext + self.text.data[self.tail:]
+        old_len = self.tail - self.head
+        new_len = len(newtext)
+        for f in self.text.fragments:
+            if f.head >= self.head + old_len:
+                f.head += new_len - old_len
+            if f.tail >= self.head + old_len:
+                f.tail += new_len - old_len
+
+    def __eq__(self, other):
+        '''
+        Enables to compare with str/unicode.  Convenient in tests.
+        '''
+        if isinstance(other, TextFragment):
+            return (self.text == other.text and self.head == other.head and self.tail == other.tail)
+        return unicode(self) == other
