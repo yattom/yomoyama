@@ -99,7 +99,7 @@ class TextFragment(object):
         return self.text.data[self.head:self.tail]
 
     def __str__(self):
-        return self.val()
+        return self.value()
 
     def update(self, newtext):
         self.text.data = self.text.data[:self.head] + newtext + self.text.data[self.tail:]
