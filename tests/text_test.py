@@ -109,7 +109,7 @@ class TextTest(unittest.TestCase):
         for key in TEXT_FOR_TESTS:
             assert_load_and_save(key)
 
-    def test_split_into_lines(self):
+    def test_split_into_blocks(self):
         data = "a\n\nb\nc\n\nd\ne\n"
         lines = text.Text.split_into_lines(data)
         assert_that([data[h:t] for (h, t) in lines],
@@ -117,7 +117,7 @@ class TextTest(unittest.TestCase):
         blocks = text.Text.split_into_blocks(data, lines)
         assert_that(block_to_str(data, lines, blocks), is_(['a\n', 'b\nc\n', 'd\ne\n']))
 
-    def test_split_into_lines_leading_blanks(self):
+    def test_split_into_blocks_leading_blanks(self):
         data = "\n\na\n\nb\n"
         lines = text.Text.split_into_lines(data)
         blocks = text.Text.split_into_blocks(data, lines)

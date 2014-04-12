@@ -12,7 +12,7 @@ class Text(object):
         self.data = data
         lines = Text.split_into_lines(self.data)
         blocks = Text.split_into_blocks(self.data, lines)
-        self.paragraphs = self.parse_into_paragraphs(lines)
+        self.paragraphs = self.parse_into_paragraphs(lines, blocks)
 
     @staticmethod
     def split_into_lines(data):
@@ -42,28 +42,22 @@ class Text(object):
                     blocks[-1][1] = i
         return blocks
 
-
-
-    def parse_into_paragraphs(self, lines):
+    def parse_into_paragraphs(self, lines, blocks):
         paragraphs = []
-        original_span = [0, 0]
-        translated_span = [0, 0]
-        for (head, tail) in lines:
-            l = self.data[head:tail].strip()
-            if len(l) == 0:
-                paragraph = Paragraph(self, original_span, translated_span)
-                paragraphs.append(paragraph)
-                original_span = [tail, tail]
-                translated_span = [tail, tail]
-                continue
-            if original_span[1] < head or Text.is_translated(l):
-                if translated_span[0] < original_span[1]:
-                    translated_span[0] = head
-                translated_span[1] = tail
+        for start, end in blocks:
+            first_translated = -1
+            for idx in range(start, end + 1):
+                head, tail = lines[idx]
+                l = self.data[head:tail].strip()
+                if Text.is_translated(l):
+                    first_translated = idx
+                    break
+            if first_translated == -1:
+                original_span = (lines[start][0], lines[end][1])
+                translated_span = (lines[end][1], lines[end][1])
             else:
-                original_span[1] = tail
-                translated_span = [tail, tail]
-        if original_span != [tail, tail] or translated_span != [tail, tail]:
+                original_span = (lines[start][0], lines[first_translated][0])
+                translated_span = (lines[first_translated][0], lines[end][1])
             paragraph = Paragraph(self, original_span, translated_span)
             paragraphs.append(paragraph)
         return paragraphs
