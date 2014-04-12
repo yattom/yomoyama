@@ -30,6 +30,11 @@ def load_data(name):
     finally:
         f.unlink(f.name)
 
+def block_to_str(data, lines, blocks):
+        ps = [range(s, e + 1) for (s, e) in blocks]
+        strs = [[data[lines[i][0]:lines[i][1]] for i in ls] for ls in ps]
+        return [''.join(s) for s in strs]
+
 TEXT_FOR_TESTS = {
     'multi_para': (
 u'''EnglishLine.
@@ -103,3 +108,17 @@ class TextTest(unittest.TestCase):
         '''
         for key in TEXT_FOR_TESTS:
             assert_load_and_save(key)
+
+    def test_split_into_lines(self):
+        data = "a\n\nb\nc\n\nd\ne\n"
+        lines = text.Text.split_into_lines(data)
+        assert_that([data[h:t] for (h, t) in lines],
+                    is_(['a\n', '\n', 'b\n', 'c\n', '\n', 'd\n', 'e\n']))
+        blocks = text.Text.split_into_blocks(data, lines)
+        assert_that(block_to_str(data, lines, blocks), is_(['a\n', 'b\nc\n', 'd\ne\n']))
+
+    def test_split_into_lines_leading_blanks(self):
+        data = "\n\na\n\nb\n"
+        lines = text.Text.split_into_lines(data)
+        blocks = text.Text.split_into_blocks(data, lines)
+        assert_that(block_to_str(data, lines, blocks), is_(['a\n', 'b\n']))

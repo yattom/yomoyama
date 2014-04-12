@@ -11,7 +11,38 @@ class Text(object):
     def read_raw(self, data):
         self.data = data
         lines = Text.split_into_lines(self.data)
+        blocks = Text.split_into_blocks(self.data, lines)
         self.paragraphs = self.parse_into_paragraphs(lines)
+
+    @staticmethod
+    def split_into_lines(data):
+        lines = []
+        head = 0
+        for i, c in enumerate(data):
+            if c == '\n':
+                lines.append((head, i + 1))
+                head = i + 1
+        if lines[-1][1] < len(data):
+            lines.append((head, len(data)))
+        return lines
+
+    @staticmethod
+    def split_into_blocks(data, lines):
+        blocks = []
+        delimiter = True
+        for i, (head, tail) in enumerate(lines):
+            l = data[head:tail].strip()
+            if len(l) == 0:
+                delimiter = True
+            else:
+                if delimiter:
+                    blocks.append([i, i])
+                    delimiter = False
+                else:
+                    blocks[-1][1] = i
+        return blocks
+
+
 
     def parse_into_paragraphs(self, lines):
         paragraphs = []
@@ -36,18 +67,6 @@ class Text(object):
             paragraph = Paragraph(self, original_span, translated_span)
             paragraphs.append(paragraph)
         return paragraphs
-
-    @staticmethod
-    def split_into_lines(data):
-        lines = []
-        head = 0
-        for i, c in enumerate(data):
-            if c == '\n':
-                lines.append((head, i + 1))
-                head = i + 1
-        if lines[-1][1] < len(data):
-            lines.append((head, len(data)))
-        return lines
 
     @staticmethod
     def is_translated(line):
