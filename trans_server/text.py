@@ -4,29 +4,24 @@ import re
 class Text(object):
     def __init__(self, path):
         self.path = path
-        self.paragraphs = []
         self.fragments = []
         with open(path, encoding='utf8') as f:
             self.read_raw(f.read())
 
     def read_raw(self, data):
         self.data = data
-        lines = []
-        head = 0
-        for i, c in enumerate(self.data):
-            if c == '\n':
-                lines.append((head, i + 1))
-                head = i + 1
-        if lines[-1][1] < len(self.data):
-            lines.append((head, len(self.data)))
+        lines = Text.split_into_lines(self.data)
+        self.paragraphs = self.parse_into_paragraphs(lines)
 
+    def parse_into_paragraphs(self, lines):
+        paragraphs = []
         original_span = [0, 0]
         translated_span = [0, 0]
         for (head, tail) in lines:
             l = self.data[head:tail].strip()
             if len(l) == 0:
                 paragraph = Paragraph(self, original_span, translated_span)
-                self.paragraphs.append(paragraph)
+                paragraphs.append(paragraph)
                 original_span = [tail, tail]
                 translated_span = [tail, tail]
                 continue
@@ -39,7 +34,20 @@ class Text(object):
                 translated_span = [tail, tail]
         if original_span != [tail, tail] or translated_span != [tail, tail]:
             paragraph = Paragraph(self, original_span, translated_span)
-            self.paragraphs.append(paragraph)
+            paragraphs.append(paragraph)
+        return paragraphs
+
+    @staticmethod
+    def split_into_lines(data):
+        lines = []
+        head = 0
+        for i, c in enumerate(data):
+            if c == '\n':
+                lines.append((head, i + 1))
+                head = i + 1
+        if lines[-1][1] < len(data):
+            lines.append((head, len(data)))
+        return lines
 
     @staticmethod
     def is_translated(line):
