@@ -59,6 +59,11 @@ English Paragraph 3.
 
 日本語の段落4。日本語部分のみ。
 '''.encode('utf-8'), 'several paragraphs'),
+    'mixed_translated': (
+u'''English Part.
+日本語の行。
+English line in translated part.
+'''.encode('utf-8'), 'English-only lines in translated part'),
 }
 
 class TextTest(unittest.TestCase):
@@ -75,6 +80,10 @@ class TextTest(unittest.TestCase):
         assert_that(len(t.paragraphs), is_(4))
         assert_that(t.paragraphs[0].translated(), is_(u'日本語の段落1。\n'))
         assert_that(t.paragraphs[3].original(), is_(u''))
+
+    def test_load_mixed_translated(self):
+        t = load_data('mixed_translated')
+        assert_that(t.paragraphs[0].original(), is_(u'English Part.\n'))
 
     def test_update_shorter(self):
         t = load_data('multi_para')

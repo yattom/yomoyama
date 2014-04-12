@@ -30,13 +30,14 @@ class Text(object):
                 original_span = [tail, tail]
                 translated_span = [tail, tail]
                 continue
-            if Text.is_translated(l):
+            if original_span[1] < head or Text.is_translated(l):
                 if translated_span[0] < original_span[1]:
                     translated_span[0] = head
                 translated_span[1] = tail
             else:
                 original_span[1] = tail
-        if translated_span != [tail, tail]:
+                translated_span = [tail, tail]
+        if original_span != [tail, tail] or translated_span != [tail, tail]:
             paragraph = Paragraph(self, original_span, translated_span)
             self.paragraphs.append(paragraph)
 
