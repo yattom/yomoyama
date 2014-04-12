@@ -46,6 +46,19 @@ English Line 3.
 日本語の行2。
 日本語の行3。
 '''.encode('utf-8'), 'a paragraph of multi lines'),
+    'many_para': (
+u'''English Paragraph 1.
+With multi English lines.
+日本語の段落1。
+
+English Paragraph 2. Only English part.
+
+English Paragraph 3.
+日本語の段落1。
+日本語部分が複数行。
+
+日本語の段落4。日本語部分のみ。
+'''.encode('utf-8'), 'several paragraphs'),
 }
 
 class TextTest(unittest.TestCase):
@@ -56,6 +69,12 @@ class TextTest(unittest.TestCase):
         assert_that(t.paragraphs[0].translated(), is_(u'日本語の行\n'))
         assert_that(t.paragraphs[1].original(), is_('EnglishLine2.\n'))
         assert_that(t.paragraphs[1].translated(), is_(''))
+
+    def test_load_many_para(self):
+        t = load_data('many_para')
+        assert_that(len(t.paragraphs), is_(4))
+        assert_that(t.paragraphs[0].translated(), is_(u'日本語の段落1。\n'))
+        assert_that(t.paragraphs[3].original(), is_(u''))
 
     def test_update_shorter(self):
         t = load_data('multi_para')

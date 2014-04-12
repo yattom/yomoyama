@@ -7,8 +7,10 @@ class Text(object):
         self.paragraphs = []
         self.fragments = []
         with open(path, encoding='utf8') as f:
-            self.data = f.read()
+            self.read_raw(f.read())
 
+    def read_raw(self, data):
+        self.data = data
         lines = []
         head = 0
         for i, c in enumerate(self.data):
@@ -18,19 +20,13 @@ class Text(object):
         if lines[-1][1] < len(self.data):
             lines.append((head, len(self.data)))
 
-        paragraph = None
         original_span = [0, 0]
         translated_span = [0, 0]
         for (head, tail) in lines:
-            l = self.data[head:tail]
-            if not paragraph: paragraph = Paragraph(self)
-            l = l.strip()
+            l = self.data[head:tail].strip()
             if len(l) == 0:
-                if paragraph:
-                    self.paragraphs.append(paragraph)
-                    paragraph.append_original(*original_span)
-                    paragraph.append_translated(*translated_span)
-                paragraph = None
+                paragraph = Paragraph(self, original_span, translated_span)
+                self.paragraphs.append(paragraph)
                 original_span = [tail, tail]
                 translated_span = [tail, tail]
                 continue
@@ -40,10 +36,9 @@ class Text(object):
                 translated_span[1] = tail
             else:
                 original_span[1] = tail
-        if paragraph:
+        if translated_span != [tail, tail]:
+            paragraph = Paragraph(self, original_span, translated_span)
             self.paragraphs.append(paragraph)
-            paragraph.append_original(*original_span)
-            paragraph.append_translated(*translated_span)
 
     @staticmethod
     def is_translated(line):
@@ -60,25 +55,10 @@ class Text(object):
 
 
 class Paragraph(object):
-    def __init__(self, text):
+    def __init__(self, text, original_span, translated_span):
         self.text = text
-        self._original = None
-        self._translated = None
-        self.id = id(self)
-
-    def append_translated(self, head, tail):
-        if not self._translated:
-            self._translated = self.text.fragment(head, tail)
-            return
-        assert head == self._translated.tail
-        self._translated = self.text.fragment(self._translated.head, tail)
-
-    def append_original(self, head, tail):
-        if not self._original:
-            self._original = self.text.fragment(head, tail)
-            return
-        assert head == self._original.tail
-        self._original = self.text.fragment(self._original.head, tail)
+        self._original = self.text.fragment(*original_span)
+        self._translated = self.text.fragment(*translated_span)
 
     def original(self):
         if not self._original: return None
