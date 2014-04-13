@@ -1,5 +1,6 @@
 #coding: utf8
 
+import os
 from flask import render_template, request, g
 from flask import render_template_string
 from trans_server import app
@@ -21,14 +22,16 @@ def index():
     books = Book.query.all()
     return render_template('index.html', user=g.user, books=books)
 
-@app.route('/text/<text_id>')
-def text(text_id):
-    text = Text(app.config['TEXT_DIR'] + '/' + text_id)
+@app.route('/books/<book_id>/files/<text_id>')
+def text(book_id, text_id):
+    book_dir = Book.book_dir(book_id)
+    text = Text(book_dir + os.sep + text_id)
     return render_template('text.html', text_id=text_id, text=text)
 
-@app.route('/text/<text_id>/paragraphs/<p_id>', methods=['GET', 'PUT'])
-def paragraph(text_id, p_id):
-    text = Text(app.config['TEXT_DIR'] + '/' + text_id)
+@app.route('/books/<book_id>/files/<text_id>/paragraphs/<p_id>', methods=['GET', 'PUT'])
+def paragraph(book_id, text_id, p_id):
+    book_dir = Book.book_dir(book_id)
+    text = Text(book_dir + os.sep + text_id)
     for para in text.paragraphs:
         if para.id == p_id:
             break
@@ -36,11 +39,13 @@ def paragraph(text_id, p_id):
         return 'ng'
     para.translated().update(request.form['text'])
     text.save()
+    book=Book.query.filter_by(id=book_id).first()
+    book.commit_and_push()
     return 'ok'
 
 @app.route('/books/<book_id>')
 def book(book_id):
-    return 'book: %s'%(book_id)
+    return render_template('books/show.html', book=Book.query.filter_by(id=book_id)).first()
 
 @app.route('/books/new')
 def new_book():
