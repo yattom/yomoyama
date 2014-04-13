@@ -107,10 +107,12 @@ class TextFragment(object):
         self.text.data = self.text.data[:self.head] + newtext + self.text.data[self.tail:]
         old_len = self.tail - self.head
         new_len = len(newtext)
+        self.tail = self.head + new_len
         for f in self.text.fragments:
+            if f is self: continue
             if f.head >= self.head + old_len:
                 f.head += new_len - old_len
-            if f.tail >= self.head + old_len:
+            if f.tail > self.head + old_len:
                 f.tail += new_len - old_len
 
     def __eq__(self, other):

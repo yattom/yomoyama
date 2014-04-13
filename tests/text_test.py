@@ -1,5 +1,6 @@
 #coding: utf-8
 
+import os
 import unittest
 import tempfile
 from hamcrest import *
@@ -8,15 +9,18 @@ from trans_server import text
 
 def assert_load_and_save(name, message=None):
     t = load_data(name)
-    t.save()
+    try:
+        t.save()
 
-    testdata = TEXT_FOR_TESTS[name]
-    with open(t.path) as f:
-        d = f.read()
-        if type(testdata) is tuple and len(testdata) == 2:
-            assert_that(d, equal_to(testdata[0]), testdata[1])
-        else:
-            assert_that(d, equal_to(testdata[0]))
+        testdata = TEXT_FOR_TESTS[name]
+        with open(t.path) as f:
+            d = f.read()
+            if type(testdata) is tuple and len(testdata) == 2:
+                assert_that(d, equal_to(testdata[0]), testdata[1])
+            else:
+                assert_that(d, equal_to(testdata[0]))
+    finally:
+        os.unlink(t.path)
 
 
 def load_data(name):
@@ -31,9 +35,26 @@ def load_data(name):
         f.unlink(f.name)
 
 def block_to_str(data, lines, blocks):
-        ps = [range(s, e + 1) for (s, e) in blocks]
-        strs = [[data[lines[i][0]:lines[i][1]] for i in ls] for ls in ps]
-        return [''.join(s) for s in strs]
+    ps = [range(s, e + 1) for (s, e) in blocks]
+    strs = [[data[lines[i][0]:lines[i][1]] for i in ls] for ls in ps]
+    return [''.join(s) for s in strs]
+
+def assert_reloaded_text_is_same(t):
+    try:
+        t.save()
+        reloaded_text = text.Text(t.path)
+        assert_that(reloaded_text.data, is_(t.data))
+
+        assert_that(len(reloaded_text.paragraphs), is_(len(t.paragraphs)))
+        for o, r in zip(t.paragraphs, reloaded_text.paragraphs):
+            assert_that(o._original.value(), is_(r._original.value()), 'original part must be same')
+            assert_that(o._translated.value(), is_(r._translated.value()), 'translated part must be same')
+            assert_that(o._original.head, is_(r._original.head), 'original part must be same')
+            assert_that(o._original.tail, is_(r._original.tail), 'original part must be same')
+            assert_that(o._translated.head, is_(r._translated.head), 'translated part must be same')
+            assert_that(o._translated.tail, is_(r._translated.tail), 'translated part must be same')
+    finally:
+        os.unlink(t.path)
 
 TEXT_FOR_TESTS = {
     'multi_para': (
@@ -102,6 +123,27 @@ class TextTest(unittest.TestCase):
         assert_that(t.paragraphs[0].translated(), is_(u'長い内容で更新した行。\n'))
         assert_that(t.paragraphs[1].original(), is_('EnglishLine2.\n'))
 
+    def test_update_empty_translated_part(self):
+        t = load_data('many_para')
+        t.paragraphs[1].translated().update(u'空だった部分の日本語更新。\n')
+        assert_that(t.paragraphs[1].translated(), is_(u'空だった部分の日本語更新。\n'))
+        assert_that(t.paragraphs[1].original(), is_('English Paragraph 2. Only English part.\n'))
+
+    def test_update_and_save_translated_part(self):
+        t = load_data('many_para')
+        t.paragraphs[0].translated().update(u'更新\n')
+        assert_reloaded_text_is_same(t)
+
+    def test_update_and_save_original_part(self):
+        t = load_data('many_para')
+        t.paragraphs[0].original().update(u'Updated English part.\n')
+        assert_reloaded_text_is_same(t)
+
+    def test_update_and_save_empty_translated_part(self):
+        t = load_data('many_para')
+        t.paragraphs[1].translated().update(u'空だった部分の日本語更新。\n')
+        assert_reloaded_text_is_same(t)
+
     def test_load_and_save(self):
         '''
         Text must save contents exactly same as loaded.
@@ -122,3 +164,15 @@ class TextTest(unittest.TestCase):
         lines = text.Text.split_into_lines(data)
         blocks = text.Text.split_into_blocks(data, lines)
         assert_that(block_to_str(data, lines, blocks), is_(['a\n', 'b\n']))
+
+    def test_split_into_blocks_trailing_blanks(self):
+        data = "a\n\nb\n\n\n\n"
+        lines = text.Text.split_into_lines(data)
+        blocks = text.Text.split_into_blocks(data, lines)
+        assert_that(block_to_str(data, lines, blocks), is_(['a\n', 'b\n']))
+
+    def test_split_into_blocks_no_newline_at_end(self):
+        data = "a\n\nb"
+        lines = text.Text.split_into_lines(data)
+        blocks = text.Text.split_into_blocks(data, lines)
+        assert_that(block_to_str(data, lines, blocks), is_(['a\n', 'b']))
