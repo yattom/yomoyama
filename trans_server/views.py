@@ -1,6 +1,7 @@
 #coding: utf8
 
-from flask import render_template, request
+from flask import render_template, request, g
+from flask import render_template_string
 from trans_server import app
 from text import Text
 
@@ -14,7 +15,13 @@ def about():
 
 @app.route('/')
 def index():
-    return 404
+    if g.user:
+        t = 'Hello! <a href="{{ url_for("user") }}">Get user</a> ' \
+            '<a href="{{ url_for("logout") }}">Logout</a>'
+    else:
+        t = 'Hello! <a href="{{ url_for("login") }}">Login</a>'
+
+    return render_template_string(t)
 
 @app.route('/text/<text_id>')
 def text(text_id):
