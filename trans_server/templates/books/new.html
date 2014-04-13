@@ -5,12 +5,13 @@
 <body>
   <form action='{{ url_for("create_book") }}' method='POST'>
     <div>
-      <label for='title'>タイトル</label>:
+      <label for='title'>Title</label>:
       <input name='title'>
     </div>
     <div>
-      <label for='repo_url'>リポジトリURL</label>:
+      <label for='repo_url'>GitHub Repository URL</label>:
       <input name='repo_url'>
+      (ex. https://github.com/yattom/aep.git )
     </div>
     <input type='submit'>
   </form>
