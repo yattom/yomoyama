@@ -91,6 +91,7 @@ class Paragraph(object):
 
     class ParagraphNormalizer(object):
         def normalize(self, s):
+            s = '\n'.join([l for l in s.split('\n') if len(l.strip()) > 0])
             if not s.endswith('\n'):
                 s += '\n'
             return s

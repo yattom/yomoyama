@@ -90,6 +90,15 @@ u'''English Part.
 日本語の行。
 English line in translated part.
 '''.encode('utf-8'), 'English-only lines in translated part'),
+    'whitespaces': (
+u'''
+  English Part.  
+日本語の行。行末に空白。  
+
+English Part. Trailing SPC and TAB.     
+    先頭にTAB。  
+
+'''.encode('utf-8'), 'Leading/Trailing SPC and TAB must remain'),
 }
 
 class TextTest(unittest.TestCase):
@@ -175,6 +184,18 @@ class TextTest(unittest.TestCase):
             # ok
             pass
         assert_that(t.data, is_(before_data), 'data must not be changed after invalid update')
+
+    def test_update_translated_with_blankline(self):
+        t = load_data('multi_para')
+        before_data = t.data[:]
+        t.paragraphs[0].translated().update(u'空行前。\n\n次は空白入り空行。\n  \n空行後。\n')
+        assert_that(t.paragraphs[0].translated(), is_(u'空行前。\n次は空白入り空行。\n空行後。\n'), 'blank lines are removed')
+
+    def test_update_translated_whitespaces_must_retained(self):
+        t = load_data('multi_para')
+        before_data = t.data[:]
+        t.paragraphs[0].translated().update(u'  行頭空白\n行末空白  \n \t TABも\t  \n')
+        assert_that(t.paragraphs[0].translated(), is_(u'  行頭空白\n行末空白  \n \t TABも\t  \n'))
 
     def test_load_and_save(self):
         '''
