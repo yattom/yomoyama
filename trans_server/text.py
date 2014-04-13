@@ -77,10 +77,31 @@ class Text(object):
 
 
 class Paragraph(object):
+    class OriginalPartValidator(object):
+        def validate(self, s):
+            if Text.is_translated(s):
+                raise ValueError('validation failed: original part should not contain Japanese')
+
+    class TranslatedPartValidator(object):
+        def validate(self, s):
+            lines = [l.strip() for l in s.split('\n')]
+            if not Text.is_translated(lines[0]):
+                raise ValueError('validation failed: the first line of a translated part should contain Japanese')
+
+    class ParagraphNormalizer(object):
+        def normalize(self, s):
+            if not s.endswith('\n'):
+                s += '\n'
+            return s
+
     def __init__(self, text, original_span, translated_span):
         self.text = text
         self._original = self.text.fragment(*original_span)
+        self._original.validator = Paragraph.OriginalPartValidator()
+        self._original.normalizer = Paragraph.ParagraphNormalizer()
         self._translated = self.text.fragment(*translated_span)
+        self._translated.validator = Paragraph.TranslatedPartValidator()
+        self._translated.normalizer = Paragraph.ParagraphNormalizer()
 
     def original(self):
         if not self._original: return None
@@ -96,6 +117,8 @@ class TextFragment(object):
         self.text = text
         self.head = head
         self.tail = tail
+        self.validator = None
+        self.normalizer = None
 
     def value(self):
         return self.text.data[self.head:self.tail]
@@ -104,6 +127,8 @@ class TextFragment(object):
         return self.value()
 
     def update(self, newtext):
+        if self.validator: self.validator.validate(newtext)
+        if self.normalizer: newtext = self.normalizer.normalize(newtext)
         self.text.data = self.text.data[:self.head] + newtext + self.text.data[self.tail:]
         old_len = self.tail - self.head
         new_len = len(newtext)

@@ -45,7 +45,7 @@ def assert_reloaded_text_is_same(t):
         reloaded_text = text.Text(t.path)
         assert_that(reloaded_text.data, is_(t.data))
 
-        assert_that(len(reloaded_text.paragraphs), is_(len(t.paragraphs)))
+        assert_that(len(reloaded_text.paragraphs), is_(len(t.paragraphs)), 'reloaded text must have same number of paragraphs')
         for o, r in zip(t.paragraphs, reloaded_text.paragraphs):
             assert_that(o._original.value(), is_(r._original.value()), 'original part must be same')
             assert_that(o._translated.value(), is_(r._translated.value()), 'translated part must be same')
@@ -143,6 +143,38 @@ class TextTest(unittest.TestCase):
         t = load_data('many_para')
         t.paragraphs[1].translated().update(u'空だった部分の日本語更新。\n')
         assert_reloaded_text_is_same(t)
+
+    def test_update_and_save_empty_original_part(self):
+        t = load_data('many_para')
+        t.paragraphs[3].original().update(u'Updated empty-at-first original part\n')
+        assert_reloaded_text_is_same(t)
+
+    def test_update_and_save_no_newline_at_end(self):
+        t = load_data('multi_para')
+        t.paragraphs[0].translated().update(u'最初の行。\n最後の行に改行なし')
+        assert_reloaded_text_is_same(t)
+
+    def test_update_original_part_with_japanese(self):
+        t = load_data('multi_para')
+        before_data = t.data[:]
+        try:
+            t.paragraphs[0].original().update(u'日本語')
+            self.fail('should not update original with Japanese')
+        except ValueError:
+            # ok
+            pass
+        assert_that(t.data, is_(before_data), 'data must not be changed after invalid update')
+
+    def test_update_translated_with_first_line_only_english(self):
+        t = load_data('multi_para')
+        before_data = t.data[:]
+        try:
+            t.paragraphs[0].translated().update(u'English.\nあとは日本語\n')
+            self.fail('should not update translated with only English top line.')
+        except ValueError:
+            # ok
+            pass
+        assert_that(t.data, is_(before_data), 'data must not be changed after invalid update')
 
     def test_load_and_save(self):
         '''
