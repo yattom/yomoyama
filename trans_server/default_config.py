@@ -3,7 +3,7 @@ base_dir = os.path.dirname(__file__)
 
 # default configuration
 
-TEXT_DIR = base_dir + '/../data/text'
+BOOKS_DIR = base_dir + '/../data/books'
 DATABASE_URI = 'sqlite:///' + base_dir + '/../data/sqlite.db'
 SECRET_KEY = 'development key'
 
@@ -11,3 +11,6 @@ SECRET_KEY = 'development key'
 GITHUB_CLIENT_ID = 'your_client_id'
 GITHUB_CLIENT_SECRET = 'your_client_secret'
 GITHUB_CALLBACK_URL = 'http://localhost:5000/github-callback'
+
+# configure git command
+GIT_CMD = '/usr/bin/git'
