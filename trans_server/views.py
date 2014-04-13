@@ -3,7 +3,9 @@
 from flask import render_template, request, g
 from flask import render_template_string
 from trans_server import app
+
 from text import Text
+from models import Book, User, db_session
 
 @app.route('/about')
 def about():
@@ -15,13 +17,9 @@ def about():
 
 @app.route('/')
 def index():
-    if g.user:
-        t = 'Hello! <a href="{{ url_for("user") }}">Get user</a> ' \
-            '<a href="{{ url_for("logout") }}">Logout</a>'
-    else:
-        t = 'Hello! <a href="{{ url_for("login") }}">Login</a>'
-
-    return render_template_string(t)
+    books = db_session
+    books = Book.query.all()
+    return render_template('index.html', user=g.user, books=books)
 
 @app.route('/text/<text_id>')
 def text(text_id):
@@ -40,3 +38,17 @@ def paragraph(text_id, p_id):
     text.save()
     return 'ok'
 
+@app.route('/books/<book_id>')
+def book(book_id):
+    return 'book: %s'%(book_id)
+
+@app.route('/books/new')
+def new_book():
+    return render_template('books/new.html')
+
+@app.route('/books', methods=['POST'])
+def create_book():
+    book = Book(request.form['title'], request.form['repo_url'])
+    db_session.add(book)
+    db_session.commit()
+    return 'book: %s'%(book.id)

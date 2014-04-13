@@ -4,7 +4,7 @@ base_dir = os.path.dirname(__file__)
 # default configuration
 
 TEXT_DIR = base_dir + '/../data/text'
-DATABASE_URI = 'sqlite:////' + base_dir + '/../data/sqlite.db'
+DATABASE_URI = 'sqlite:///' + base_dir + '/../data/sqlite.db'
 SECRET_KEY = 'development key'
 
 # configuration for GitHub-Flask

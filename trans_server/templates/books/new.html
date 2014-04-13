@@ -1,0 +1,17 @@
+<!doctype html>
+<head>
+  <title>create new book - yomoyama</title>
+</head>
+<body>
+  <form action='{{ url_for("create_book") }}' method='POST'>
+    <div>
+      <label for='title'>タイトル</label>:
+      <input name='title'>
+    </div>
+    <div>
+      <label for='repo_url'>リポジトリURL</label>:
+      <input name='repo_url'>
+    </div>
+    <input type='submit'>
+  </form>
+</body>
