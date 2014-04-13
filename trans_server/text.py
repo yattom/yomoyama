@@ -1,3 +1,4 @@
+import hashlib
 from codecs import open
 import re
 
@@ -102,6 +103,7 @@ class Paragraph(object):
         self._translated = self.text.fragment(*translated_span)
         self._translated.validator = Paragraph.TranslatedPartValidator()
         self._translated.normalizer = Paragraph.ParagraphNormalizer()
+        self.id = self._original.id + '-' + self._translated.id
 
     def original(self):
         if not self._original: return None
@@ -119,6 +121,7 @@ class TextFragment(object):
         self.tail = tail
         self.validator = None
         self.normalizer = None
+        self._id = None
 
     def value(self):
         return self.text.data[self.head:self.tail]
@@ -139,6 +142,7 @@ class TextFragment(object):
                 f.head += new_len - old_len
             if f.tail > self.head + old_len:
                 f.tail += new_len - old_len
+        self._id = None
 
     def __eq__(self, other):
         '''
@@ -147,3 +151,9 @@ class TextFragment(object):
         if isinstance(other, TextFragment):
             return (self.text == other.text and self.head == other.head and self.tail == other.tail)
         return unicode(self) == other
+
+    def get_id(self):
+        if not self._id:
+            self._id = hashlib.sha1(self.value().encode('utf8')).hexdigest()
+        return self._id
+    id = property(get_id)

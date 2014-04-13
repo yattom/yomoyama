@@ -1,6 +1,6 @@
 #coding: utf8
 
-from flask import render_template
+from flask import render_template, request
 from trans_server import app
 from text import Text
 
@@ -23,5 +23,13 @@ def text(text_id):
 
 @app.route('/text/<text_id>/paragraphs/<p_id>', methods=['GET', 'PUT'])
 def paragraph(text_id, p_id):
+    text = Text(app.config['TEXT_DIR'] + '/' + text_id)
+    for para in text.paragraphs:
+        if para.id == p_id:
+            break
+    else:
+        return 'ng'
+    para.translated().update(request.form['text'])
+    text.save()
     return 'ok'
 
