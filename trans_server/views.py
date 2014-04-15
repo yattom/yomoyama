@@ -2,6 +2,7 @@
 
 import os
 from flask import render_template, request, g
+from flask import jsonify
 from flask import render_template_string
 from trans_server import app
 
@@ -28,8 +29,8 @@ def text(book_id, text_id):
     text = Text(book_dir + os.sep + text_id)
     return render_template('text.html', text_id=text_id, text=text)
 
-@app.route('/books/<book_id>/files/<text_id>/paragraphs/<p_id>', methods=['GET', 'PUT'])
-def paragraph(book_id, text_id, p_id):
+@app.route('/books/<book_id>/files/<text_id>/paragraphs/<p_id>', methods=['PUT'])
+def update_paragraph(book_id, text_id, p_id):
     book_dir = Book.book_dir(book_id)
     text = Text(book_dir + os.sep + text_id)
     for para in text.paragraphs:
@@ -42,6 +43,17 @@ def paragraph(book_id, text_id, p_id):
     book=Book.query.filter_by(id=book_id).first()
     book.commit_and_push()
     return 'ok'
+
+@app.route('/books/<book_id>/files/<text_id>/paragraphs/<p_id>', methods=['GET'])
+def get_paragraph(book_id, text_id, p_id):
+    book_dir = Book.book_dir(book_id)
+    text = Text(book_dir + os.sep + text_id)
+    for para in text.paragraphs:
+        if para.id == p_id:
+            break
+    else:
+        return 404
+    return jsonify({'original': para.original().value(), 'translated': para.translated().value(), 'id': para.id})
 
 @app.route('/books/<book_id>')
 def book(book_id):

@@ -104,7 +104,6 @@ class Paragraph(object):
         self._translated = self.text.fragment(*translated_span)
         self._translated.validator = Paragraph.TranslatedPartValidator()
         self._translated.normalizer = Paragraph.ParagraphNormalizer()
-        self.id = self._original.id + '-' + self._translated.id
 
     def original(self):
         if not self._original: return None
@@ -113,6 +112,10 @@ class Paragraph(object):
     def translated(self):
         if not self._translated: return None
         return self._translated
+
+    def get_id(self):
+        return self._original.id
+    id = property(get_id)
 
 
 class TextFragment(object):

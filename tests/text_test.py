@@ -229,3 +229,12 @@ class TextTest(unittest.TestCase):
         lines = text.Text.split_into_lines(data)
         blocks = text.Text.split_into_blocks(data, lines)
         assert_that(block_to_str(data, lines, blocks), is_(['a\n', 'b']))
+
+    def test_paragraph_id(self):
+        t = load_data('multi_para')
+        paragraph = t.paragraphs[0]
+        id_before = paragraph.id
+        paragraph.translated().update(u'更新')
+        assert_that(paragraph.id, is_(id_before))
+        paragraph.original().update(u'Modified')
+        assert_that(paragraph.id, is_not(id_before))
