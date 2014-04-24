@@ -11,3 +11,6 @@ SECRET_KEY = os.environ['SECRET_KEY']
 GITHUB_CLIENT_ID = os.environ['CLIENT_ID']
 GITHUB_CLIENT_SECRET = os.environ['CLIENT_SECRET']
 GITHUB_CALLBACK_URL = 'http://lit-depths-4578.herokuapp.com/github-callback'
+
+# configure git command
+GIT_CMD = '/usr/bin/git'
