@@ -3,8 +3,8 @@ base_dir = os.path.dirname(__file__)
 
 # configuration for production on heroku
 
-BOOKS_DIR = base_dir + '/../data/books'
-DATABASE_URI = 'sqlite:///' + base_dir + '/../data/sqlite.db'
+BOOKS_DIR = base_dir + '/data/books'
+DATABASE_URI = 'sqlite:///' + base_dir + '/data/sqlite.db'
 SECRET_KEY = os.environ['SECRET_KEY']
 
 # configuration for GitHub-Flask
