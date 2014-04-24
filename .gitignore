@@ -3,7 +3,8 @@ lib/
 include/
 man/
 local/
-data/
+data/books
+data/*.db
 local_config.py
 *.pyc
 *.pyo
