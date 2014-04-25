@@ -5,7 +5,7 @@ import unittest
 import tempfile
 from hamcrest import *
 
-from trans_server import text
+from yomoyama import text
 
 def assert_load_and_save(name, message=None):
     t = load_data(name)

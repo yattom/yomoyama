@@ -5,7 +5,7 @@ from sqlalchemy import create_engine, Column, Integer, String, event
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
-from trans_server import app
+from yomoyama import app
 
 # setup sqlalchemy
 engine = create_engine(app.config['DATABASE_URI'])

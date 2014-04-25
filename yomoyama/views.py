@@ -4,7 +4,7 @@ import os
 from flask import render_template, request, g
 from flask import jsonify
 from flask import render_template_string
-from trans_server import app
+from yomoyama import app
 
 from text import Text
 from models import Book, User, db_session
@@ -12,7 +12,7 @@ from models import Book, User, db_session
 @app.route('/about')
 def about():
     lines = []
-    lines.append('trans_server:')
+    lines.append('yomoyama:')
     for f in ['__name__', 'app.config["DEBUG"]', 'app.config["TEXT_DIR"]']:
         lines.append('%s = %s'%(f, repr(eval(f))))
     return '<br>'.join(lines)

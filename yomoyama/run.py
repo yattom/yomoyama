@@ -1,4 +1,4 @@
-from trans_server import app
+from yomoyama import app
 
 if __name__=='__main__':
     app.debug = True

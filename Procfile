@@ -1,1 +1,1 @@
-web: gunicorn trans_server.run:app
+web: gunicorn yomoyama.run:app

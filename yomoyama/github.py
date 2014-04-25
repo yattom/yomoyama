@@ -1,8 +1,8 @@
 from flask import request, session, g, url_for, redirect, json
 from flask import render_template_string
 from flask.ext.github import GitHub
-from trans_server import app
-from trans_server.models import User, db_session
+from yomoyama import app
+from yomoyama.models import User, db_session
 
 github = GitHub(app)
 
