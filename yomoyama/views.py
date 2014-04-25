@@ -57,7 +57,7 @@ def get_paragraph(book_id, text_id, p_id):
 
 @app.route('/books/<book_id>')
 def book(book_id):
-    return render_template('books/show.html', book=Book.query.filter_by(id=book_id)).first()
+    return render_template('books/show.html', book=Book.query.filter_by(id=book_id).first())
 
 @app.route('/books/new')
 def new_book():

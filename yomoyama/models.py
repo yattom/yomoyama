@@ -1,4 +1,5 @@
 import os
+import os.path
 import subprocess
 from flask import g
 from sqlalchemy import create_engine, Column, Integer, String, event
@@ -61,6 +62,19 @@ class Book(Base):
     @staticmethod
     def book_dir(book_id):
         return app.config['BOOKS_DIR'] + os.sep + str(book_id)
+
+    def texts(self):
+        file_names = []
+        def fn(arg, dirname, fnames):
+            for f in fnames:
+                if f.startswith('.'):
+                    fnames.remove(f)
+                    continue
+                file_names.append(f)
+            return True
+        os.path.walk(Book.book_dir(self.id), fn, None)
+        return file_names
+
 
 @event.listens_for(Book, 'after_insert')
 def receive_after_insert(mapper, connection, book):
