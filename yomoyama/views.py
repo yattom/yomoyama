@@ -1,6 +1,7 @@
 #coding: utf8
 
 import os
+import os.path
 from flask import render_template, request, g
 from flask import jsonify
 from flask import render_template_string
@@ -26,12 +27,14 @@ def index():
 @app.route('/books/<book_id>/files/<path:text_id>')
 def text(book_id, text_id):
     book_dir = Book.book_dir(book_id)
+    validate_text_id(book_dir, text_id)
     text = Text(book_dir + os.sep + text_id)
     return render_template('text.html', text_id=text_id, text=text)
 
 @app.route('/books/<book_id>/files/<path:text_id>/paragraphs/<p_id>', methods=['PUT'])
 def update_paragraph(book_id, text_id, p_id):
     book_dir = Book.book_dir(book_id)
+    validate_text_id(book_dir, text_id)
     text = Text(book_dir + os.sep + text_id)
     for para in text.paragraphs:
         if para.id == p_id:
@@ -47,6 +50,7 @@ def update_paragraph(book_id, text_id, p_id):
 @app.route('/books/<book_id>/files/<path:text_id>/paragraphs/<p_id>', methods=['GET'])
 def get_paragraph(book_id, text_id, p_id):
     book_dir = Book.book_dir(book_id)
+    validate_text_id(book_dir, text_id)
     text = Text(book_dir + os.sep + text_id)
     for para in text.paragraphs:
         if para.id == p_id:
@@ -69,3 +73,9 @@ def create_book():
     db_session.add(book)
     db_session.commit()
     return 'book: %s'%(book.id)
+
+def validate_text_id(book_dir, text_id):
+    # TODO: guess there is a more robust way to do this
+    path = book_dir + os.sep + text_id
+    if not os.path.abspath(path).startswith(book_dir):
+        raise ValueError('invalid text_id')
