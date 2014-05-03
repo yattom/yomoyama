@@ -23,13 +23,13 @@ def index():
     books = Book.query.all()
     return render_template('index.html', user=g.user, books=books)
 
-@app.route('/books/<book_id>/files/<text_id>')
+@app.route('/books/<book_id>/files/<path:text_id>')
 def text(book_id, text_id):
     book_dir = Book.book_dir(book_id)
     text = Text(book_dir + os.sep + text_id)
     return render_template('text.html', text_id=text_id, text=text)
 
-@app.route('/books/<book_id>/files/<text_id>/paragraphs/<p_id>', methods=['PUT'])
+@app.route('/books/<book_id>/files/<path:text_id>/paragraphs/<p_id>', methods=['PUT'])
 def update_paragraph(book_id, text_id, p_id):
     book_dir = Book.book_dir(book_id)
     text = Text(book_dir + os.sep + text_id)
@@ -44,7 +44,7 @@ def update_paragraph(book_id, text_id, p_id):
     book.commit_and_push()
     return 'ok'
 
-@app.route('/books/<book_id>/files/<text_id>/paragraphs/<p_id>', methods=['GET'])
+@app.route('/books/<book_id>/files/<path:text_id>/paragraphs/<p_id>', methods=['GET'])
 def get_paragraph(book_id, text_id, p_id):
     book_dir = Book.book_dir(book_id)
     text = Text(book_dir + os.sep + text_id)

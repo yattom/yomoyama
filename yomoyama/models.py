@@ -70,9 +70,12 @@ class Book(Base):
                 if f.startswith('.'):
                     fnames.remove(f)
                     continue
-                file_names.append(f)
+                path = dirname[len(book_dir) + 1:] + os.sep if len(dirname) > len(book_dir) else ''
+                path += f
+                file_names.append(path)
             return True
-        os.path.walk(Book.book_dir(self.id), fn, None)
+        book_dir = Book.book_dir(self.id)
+        os.path.walk(book_dir, fn, None)
         return file_names
 
 
