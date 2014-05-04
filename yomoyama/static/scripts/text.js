@@ -18,9 +18,14 @@ $(function() {
       url: $(location).attr('href') + '/paragraphs/' + pId,
       type: 'PUT',
       data: { text: txt },
-      success: function() {
-        $.get($(location).attr('href') + '/paragraphs/' + pId, function(data) {
-          $('div[data-p-id=' + pId + ']').html('\
+      success: function(resp) {
+        if(!resp.is_updated) {
+          $('div[data-p-id=' + resp.paragraph_id + '] .display').show();
+          $('div[data-p-id=' + resp.paragraph_id + '] .editor').hide();
+          return;
+        }
+        $.get($(location).attr('href') + '/paragraphs/' + resp.paragraph_id, function(data) {
+          $('div[data-p-id=' + data.id + ']').html('\
 <div class="en">' + data.original + '</div>\
 <div class="ja">\
   <div class="display">\
@@ -33,11 +38,11 @@ $(function() {
   </div>\
 </div>\
 ');
-          $('div[data-p-id=' + pId + '] .display').show();
-          $('div[data-p-id=' + pId + '] .editor').hide();
-          $('div[data-p-id=' + pId + '] .editor textarea').flexible();
-          $('div[data-p-id=' + pId + '] span.edit').click(do_edit);
-          $('div[data-p-id=' + pId + '] span.save').click(do_save);
+          $('div[data-p-id=' + data.id + '] .display').show();
+          $('div[data-p-id=' + data.id + '] .editor').hide();
+          $('div[data-p-id=' + data.id + '] .editor textarea').flexible();
+          $('div[data-p-id=' + data.id + '] span.edit').click(do_edit);
+          $('div[data-p-id=' + data.id + '] span.save').click(do_save);
         });
       }
     });

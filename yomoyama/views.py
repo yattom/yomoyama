@@ -41,11 +41,13 @@ def update_paragraph(book_id, text_id, p_id):
             break
     else:
         return 'ng'
+    if para.translated() == request.form['text']:
+        return jsonify({'paragraph_id': para.id, 'is_updated': False})
     para.translated().update(request.form['text'])
     text.save()
     book=Book.query.filter_by(id=book_id).first()
     book.commit_and_push()
-    return 'ok'
+    return jsonify({'paragraph_id': para.id, 'is_updated': True})
 
 @app.route('/books/<book_id>/files/<path:text_id>/paragraphs/<p_id>', methods=['GET'])
 def get_paragraph(book_id, text_id, p_id):
