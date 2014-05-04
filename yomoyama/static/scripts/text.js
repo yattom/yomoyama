@@ -36,8 +36,8 @@ $(function() {
           $('div[data-p-id=' + pId + '] .display').show();
           $('div[data-p-id=' + pId + '] .editor').hide();
           $('div[data-p-id=' + pId + '] .editor textarea').flexible();
-          $('div[data-p-id=' + pId + '] .editor span.edit').click(do_edit);
-          $('div[data-p-id=' + pId + '] .editor span.save').click(do_save);
+          $('div[data-p-id=' + pId + '] span.edit').click(do_edit);
+          $('div[data-p-id=' + pId + '] span.save').click(do_save);
         });
       }
     });
