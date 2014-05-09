@@ -49,7 +49,7 @@ class Book(Base):
         #branch = 'master'
         branch = 'yattom_working' #FIXME!!!
         # git operation is always pull (do not clone)
-        # see https://github.com/blog/1270-easier-builds-and-deployments-using-git-over-https-and-oauth 
+        # see https://github.com/blog/1270-easier-builds-and-deployments-using-git-over-https-and-oauth
         subprocess.call([app.config['GIT_CMD'], 'init', '.'], cwd=book_dir)
         subprocess.call([app.config['GIT_CMD'], 'pull', url_with_auth, branch], cwd=book_dir)
 
@@ -92,6 +92,27 @@ class Book(Base):
 
 @event.listens_for(Book, 'after_insert')
 def receive_after_insert(mapper, connection, book):
-    book.initialize_repository()
+    wdir = WorkingDirectory(Book.book_dir(book.id), book.repo_url, 'yattom_working', g.user.github_access_token)
+    wdir.initialize_repository()
+
+class WorkingDirectory(object):
+    def __init__(self, dir_path, repo_url, remote_branch, access_token):
+        self.dir_path = dir_path
+        self.remote_branch = remote_branch
+        self.repo_url = repo_url
+        self.access_token = access_token
+
+    def initialize_repository(self):
+        assert os.access(self.dir_path, os.F_OK) == False, 'book working directory already exsits'
+        url_with_auth = 'https://' + self.access_token + '@' + self.repo_url[8:]
+        os.mkdir(self.dir_path)
+        # git operation is always pull (do not clone)
+        # see https://github.com/blog/1270-easier-builds-and-deployments-using-git-over-https-and-oauth
+        self.git('init', '.')
+        self.git('pull', url_with_auth, self.remote_branch)
+
+    def git(self, *args):
+        subprocess.call([app.config['GIT_CMD']] + list(args), cwd=self.dir_path)
+
 
 init_db()
