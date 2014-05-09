@@ -62,6 +62,14 @@ class Book(Base):
         subprocess.call([app.config['GIT_CMD'], 'commit', '-m', 'updated'], cwd=book_dir)
         subprocess.call([app.config['GIT_CMD'], 'push', url_with_auth, 'master:%s'%(branch)], cwd=book_dir)
 
+    def pull(self):
+        book_dir = Book.book_dir(self.id)
+        assert os.access(book_dir, os.F_OK), 'book working directory does not exsit'
+        url_with_auth = 'https://' + g.user.github_access_token + '@' + self.repo_url[8:]
+        #branch = 'master'
+        branch = 'yattom_working' #FIXME!!!
+        subprocess.call([app.config['GIT_CMD'], 'pull', url_with_auth, branch], cwd=book_dir)
+
     @staticmethod
     def book_dir(book_id):
         return app.config['BOOKS_DIR'] + os.sep + str(book_id)

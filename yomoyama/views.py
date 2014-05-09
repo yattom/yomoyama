@@ -3,6 +3,7 @@
 import os
 import os.path
 from flask import render_template, request, g
+from flask import redirect, url_for
 from flask import jsonify
 from flask import render_template_string
 from yomoyama import app
@@ -48,6 +49,12 @@ def update_paragraph(book_id, text_id, p_id):
     book=Book.query.filter_by(id=book_id).first()
     book.commit_and_push()
     return jsonify({'paragraph_id': para.id, 'is_updated': True})
+
+@app.route('/books/<book_id>/pull', methods=['GET'])
+def pull_book(book_id):
+    book=Book.query.filter_by(id=book_id).first()
+    book.pull()
+    return redirect(url_for('book', book_id=book.id))
 
 @app.route('/books/<book_id>/files/<path:text_id>/paragraphs/<p_id>', methods=['GET'])
 def get_paragraph(book_id, text_id, p_id):
