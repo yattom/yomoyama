@@ -34,5 +34,5 @@ class WorkingDirectoryTest(unittest.TestCase):
             sut.initialize_repository()
             self.fail()
         except AssertionError, e:
-            assert_that(e.message, is_('book working directory already exsits'))
+            assert_that(e.message, is_('book working directory already exists'))
 
