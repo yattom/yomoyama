@@ -41,7 +41,12 @@ class Book(Base):
     def __init__(self, title, repo_url):
         self.title = title
         self.repo_url = repo_url
-        self.wdir = WorkingDirectory(Book.book_dir(self.id), self.repo_url, 'yattom_working', yomoyama.github_access_token())
+
+    def get_wdir(self):
+        book_for_user = BookForUser.query.filter_by(book_id=self.id, user_id=g.user.id).first()
+        branch_name = book_for_user.remote_branch
+        return WorkingDirectory(Book.book_dir(self.id), self.repo_url, branch_name, yomoyama.github_access_token())
+    wdir = property(get_wdir)
 
     def commit_and_push(self):
         self.wdir.commit_and_push()
@@ -69,8 +74,22 @@ class Book(Base):
         return file_names
 
 
-@event.listens_for(Book, 'after_insert')
-def receive_after_insert(mapper, connection, book):
+class BookForUser(Base):
+    __tablename__ = 'books_for_users'
+
+    id = Column(Integer, primary_key=True)
+    book_id = Column(Integer)
+    user_id = Column(Integer)
+    remote_branch = Column(String(200))
+
+    def __init__(self, book_id, user_id, remote_branch):
+        self.book_id = book_id
+        self.user_id = user_id
+        self.remote_branch = remote_branch
+
+@event.listens_for(BookForUser, 'after_insert')
+def receive_after_insert(mapper, connection, book_for_user):
+    book = Book.query.filter_by(id=book_for_user.book_id).first()
     book.wdir.initialize_repository()
 
 
@@ -88,16 +107,16 @@ class WorkingDirectory(object):
         # git operation is always pull (do not clone)
         # see https://github.com/blog/1270-easier-builds-and-deployments-using-git-over-https-and-oauth
         self.git('init', '.')
+        self.git('checkout', '-b', self.remote_branch)
         self.git('pull', url_with_auth, self.remote_branch)
 
     def commit_and_push(self):
         url_with_auth = 'https://' + self.access_token + '@' + self.repo_url[8:]
         self.git('add', '-u')
         self.git('commit', '-m', 'updated')
-        self.git('push', url_with_auth, 'master:%s'%(self.remote_branch))
+        self.git('push', url_with_auth, self.remote_branch)
 
     def pull(self):
-        assert os.access(self.dir_path, os.F_OK) == False, 'book working directory already exists'
         url_with_auth = 'https://' + self.access_token + '@' + self.repo_url[8:]
         self.git('pull', url_with_auth, self.remote_branch)
 

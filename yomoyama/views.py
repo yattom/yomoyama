@@ -9,7 +9,7 @@ from flask import render_template_string
 from yomoyama import app
 
 from text import Text
-from models import Book, User, db_session
+from models import Book, User, BookForUser, db_session
 
 @app.route('/about')
 def about():
@@ -80,6 +80,9 @@ def new_book():
 def create_book():
     book = Book(request.form['title'], request.form['repo_url'])
     db_session.add(book)
+    db_session.commit()
+    book_for_user = BookForUser(book.id, g.user.id, request.form['branch'])
+    db_session.add(book_for_user)
     db_session.commit()
     return 'book: %s'%(book.id)
 

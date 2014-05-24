@@ -27,7 +27,8 @@ class WorkingDirectoryTest(unittest.TestCase):
         self.sut.initialize_repository()
 
         assert_that(git_args[0], is_(('init', '.')))
-        assert_that(git_args[1], is_(('pull', 'https://auth_token@exmaple.com/repo/.git', 'branch_name')))
+        assert_that(git_args[1], is_(('checkout', '-b', 'branch_name')))
+        assert_that(git_args[2], is_(('pull', 'https://auth_token@exmaple.com/repo/.git', 'branch_name')))
 
     def test_initialize_repository_overwrite(self):
         os.mkdir(self.tempdir + os.sep + 'wdir')
@@ -43,7 +44,7 @@ class WorkingDirectoryTest(unittest.TestCase):
 
         assert_that(git_args[0], is_(('add', '-u')))
         assert_that(git_args[1], is_(('commit', '-m', 'updated')))
-        assert_that(git_args[2], is_(('push', 'https://auth_token@exmaple.com/repo/.git', 'master:branch_name')))
+        assert_that(git_args[2], is_(('push', 'https://auth_token@exmaple.com/repo/.git', 'branch_name')))
 
     def test_commit_and_pull(self):
         self.sut.pull()
