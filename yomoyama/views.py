@@ -44,10 +44,11 @@ def update_paragraph(book_id, text_id, p_id):
         return 'ng'
     if para.translated() == request.form['text']:
         return jsonify({'paragraph_id': para.id, 'is_updated': False})
+    elapsed = int(request.form['finished_at']) - int(request.form['started_at']);
     para.translated().update(request.form['text'])
     text.save()
     book=Book.query.filter_by(id=book_id).first()
-    book.commit_and_push()
+    book.commit_and_push(work_time_ms=elapsed)
     return jsonify({'paragraph_id': para.id, 'is_updated': True})
 
 @app.route('/books/<book_id>/pull', methods=['GET'])

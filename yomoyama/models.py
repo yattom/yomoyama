@@ -21,6 +21,29 @@ Base.query = db_session.query_property()
 def init_db():
     Base.metadata.create_all(bind=engine)
 
+def readable_time(ms):
+    '''
+    >>> readable_time(8 * 1000)
+    '0:08'
+    >>> readable_time((6 * 60 + 40) * 1000)
+    '6:40'
+    >>> readable_time(45 * 1000)
+    '0:45'
+    >>> readable_time((6 * 60 + 40) * 1000)
+    '6:40'
+    >>> readable_time((30 * 60 + 25) * 1000)
+    '30:25'
+    >>> readable_time(((5 * 60 + 50) * 60 + 9) * 1000)
+    '5:50:09'
+    >>> readable_time(((246 * 60 + 50) * 60 + 9) * 1000)
+    '246:50:09'
+    '''
+    sec = ms / 1000
+    if sec < 60 * 60:
+        return '%d:%02d'%(sec / 60, sec % 60)
+    else:
+        return '%d:%02d:%02d'%(sec / (60 * 60), (sec / 60) % 60, sec % 60)
+
 class User(Base):
     __tablename__ = 'users'
 
@@ -48,8 +71,8 @@ class Book(Base):
         return WorkingDirectory(Book.book_dir(self.id), self.repo_url, branch_name, yomoyama.github_access_token())
     wdir = property(get_wdir)
 
-    def commit_and_push(self):
-        self.wdir.commit_and_push()
+    def commit_and_push(self, work_time_ms=0):
+        self.wdir.commit_and_push(work_time_ms)
 
     def pull(self):
         self.wdir.pull()
@@ -110,10 +133,13 @@ class WorkingDirectory(object):
         self.git('checkout', '-b', self.remote_branch)
         self.git('pull', url_with_auth, self.remote_branch)
 
-    def commit_and_push(self):
+    def commit_and_push(self, work_time_ms=0):
         url_with_auth = 'https://' + self.access_token + '@' + self.repo_url[8:]
         self.git('add', '-u')
-        self.git('commit', '-m', 'updated')
+        comment = 'updated'
+        if work_time_ms:
+            comment += ' (%s)'%(readable_time(work_time_ms))
+        self.git('commit', '-m', comment)
         self.git('push', url_with_auth, self.remote_branch)
 
     def pull(self):

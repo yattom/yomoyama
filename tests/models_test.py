@@ -40,10 +40,10 @@ class WorkingDirectoryTest(unittest.TestCase):
             assert_that(git_args, is_([]))
 
     def test_commit_and_push(self):
-        self.sut.commit_and_push()
+        self.sut.commit_and_push(work_time_ms=120123)
 
         assert_that(git_args[0], is_(('add', '-u')))
-        assert_that(git_args[1], is_(('commit', '-m', 'updated')))
+        assert_that(git_args[1], is_(('commit', '-m', 'updated (2:00)')))
         assert_that(git_args[2], is_(('push', 'https://auth_token@exmaple.com/repo/.git', 'branch_name')))
 
     def test_commit_and_pull(self):

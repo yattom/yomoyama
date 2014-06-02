@@ -7,17 +7,24 @@ $(function() {
     $('div[data-p-id=' + pId + '] .display').hide();
     $('div[data-p-id=' + pId + '] .editor').show();
     $('div[data-p-id=' + pId + '] .editor textarea').trigger('updateHeight');
+    $('div[data-p-id=' + pId + '] .editor').data('started_at', $.now());
   };
   $('span.edit').click(do_edit);
 
   do_save = function() {
     pId = $(this).data('pId');
 
+    started_at = $('div[data-p-id=' + pId + '] .editor').data('started_at');
+    finished_at = $.now();
     txt = $('div[data-p-id=' + pId + '] .editor textarea').val();
     $.ajax({
       url: $(location).attr('href') + '/paragraphs/' + pId,
       type: 'PUT',
-      data: { text: txt },
+      data: {
+        text: txt,
+        started_at: started_at,
+        finished_at: finished_at
+      },
       success: function(resp) {
         if(!resp.is_updated) {
           $('div[data-p-id=' + resp.paragraph_id + '] .display').show();
