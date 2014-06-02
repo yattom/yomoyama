@@ -72,6 +72,7 @@ class Book(Base):
     wdir = property(get_wdir)
 
     def commit_and_push(self, work_time_ms=0):
+        self.wdir.add('*.yomo')
         self.wdir.commit_and_push(work_time_ms)
 
     def pull(self):
@@ -145,6 +146,9 @@ class WorkingDirectory(object):
     def pull(self):
         url_with_auth = 'https://' + self.access_token + '@' + self.repo_url[8:]
         self.git('pull', url_with_auth, self.remote_branch)
+
+    def add(self, pattern):
+        self.git('add', pattern)
 
     def git(self, *args):
         subprocess.call([app.config['GIT_CMD']] + list(args), cwd=self.dir_path)

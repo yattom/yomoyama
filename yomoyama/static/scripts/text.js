@@ -1,4 +1,5 @@
 $(function() {
+  $('body').data('session_started_at', $.now());
   $('div.editor').hide();
   $('div.editor textarea').flexible();
 
@@ -22,8 +23,10 @@ $(function() {
       type: 'PUT',
       data: {
         text: txt,
-        started_at: started_at,
-        finished_at: finished_at
+        paragraph_started_at: started_at,
+        paragraph_finished_at: finished_at,
+        session_started_at: $('body').data('session_started_at'),
+        session_saved_at: finished_at
       },
       success: function(resp) {
         if(!resp.is_updated) {

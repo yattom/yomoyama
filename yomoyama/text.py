@@ -1,4 +1,5 @@
 import hashlib
+from flask import json
 from codecs import open
 import re
 
@@ -8,6 +9,11 @@ class Text(object):
         self.fragments = []
         with open(path, encoding='utf8') as f:
             self.read_raw(f.read())
+        try:
+            with open(path + '.yomo', encoding='utf8') as f:
+                self.metadata = json.load(f)
+        except IOError:
+            self.metadata = {}
 
     def read_raw(self, data):
         self.data = data
@@ -75,6 +81,22 @@ class Text(object):
         f = TextFragment(self, head, tail)
         self.fragments.append(f)
         return f
+
+    def add_session(self, started_at, saved_at):
+        if 'sessions' not in self.metadata:
+            self.metadata['sessions'] = []
+        sessions = self.metadata['sessions']
+        for i in range(len(sessions)):
+            if sessions[i][0] == started_at and sessions[i][1] < saved_at:
+                sessions[i][1] = saved_at
+                break
+        else:
+            sessions.append([started_at, saved_at])
+        self.save_metadata()
+
+    def save_metadata(self):
+        with open(self.path + '.yomo', 'w', encoding='utf8') as f:
+            json.dump(self.metadata, f)
 
 
 class Paragraph(object):
