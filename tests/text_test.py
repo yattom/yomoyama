@@ -238,3 +238,10 @@ class TextTest(unittest.TestCase):
         assert_that(paragraph.id, is_(id_before))
         paragraph.original().update(u'Modified')
         assert_that(paragraph.id, is_not(id_before))
+
+class TextIsTranslated(unittest.TestCase):
+    def test_english(self):
+        assert_that(text.Text.is_translated('The quick brown fox jumps over a lazy dog.'), is_(False))
+
+    def test_bullet(self):
+        assert_that(text.Text.is_translated(u'•'), is_(False))
