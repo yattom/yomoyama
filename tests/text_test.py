@@ -245,3 +245,11 @@ class TextIsTranslated(unittest.TestCase):
 
     def test_bullet(self):
         assert_that(text.Text.is_translated(u'•'), is_(False))
+
+    def test_brackets(self):
+        assert_that(text.Text.is_translated(u'[AUTHOR]'), is_(False))
+
+    def test_titles(self):
+        assert_that(text.Text.is_translated(u'#####'), is_(False))
+        assert_that(text.Text.is_translated(u'====='), is_(False))
+        assert_that(text.Text.is_translated(u'-----'), is_(False))
