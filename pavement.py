@@ -18,8 +18,12 @@ def test_end2end():
     os.mkdir(books_dir)
     os.environ['BOOKS_DIR'] = books_dir
     os.environ['DISPLAY'] = ':1'
-    x = subprocess.Popen(['Xvfb', os.environ['DISPLAY']])
+    devnull = open('/dev/null', 'w')
+    x = subprocess.Popen(['Xvfb', os.environ['DISPLAY']], stdout=devnull, stderr=devnull)
     p = subprocess.Popen(['gunicorn','yomoyama.run:app', '-b', '%s:%s'%(target_ip, target_port)])
-    sh('./gradlew cleanTest firefoxTest')
-    p.terminate()
-    x.terminate()
+    try:
+        sh('./gradlew cleanTest firefoxTest')
+    finally:
+        p.terminate()
+        x.terminate()
+        devnull.close()
