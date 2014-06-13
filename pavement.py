@@ -27,3 +27,4 @@ def test_end2end():
         p.terminate()
         x.terminate()
         devnull.close()
+        sh('rm -rf %s'%(tempdir))
