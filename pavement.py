@@ -10,6 +10,6 @@ def test_end2end():
     os.environ['DISPLAY']=':1'
     x=subprocess.Popen(['Xvfb', os.environ['DISPLAY']])
     p=subprocess.Popen(['gunicorn','yomoyama.run:app'])
-    sh('./gradlew firefoxTest')
+    sh('./gradlew cleanTest firefoxTest')
     p.terminate()
     x.terminate()
