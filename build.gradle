@@ -20,7 +20,7 @@ dependencies {
  
     // If using JUnit, need to depend on geb-junit (3 or 4)
     testCompile "org.gebish:geb-junit4:$gebVersion"
-    testCompile "junit:junit-dep:4.8.2"
+    testCompile "junit:junit-dep:4.11"
  
     // Need a driver implementation
     drivers.each { driver ->
