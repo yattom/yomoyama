@@ -20,7 +20,7 @@ def test_end2end():
     os.environ['DISPLAY'] = ':1'
     devnull = open('/dev/null', 'w')
     x = subprocess.Popen(['Xvfb', os.environ['DISPLAY']], stdout=devnull, stderr=devnull)
-    p = subprocess.Popen(['gunicorn','yomoyama.run:app', '-b', '%s:%s'%(target_ip, target_port)])
+    p = subprocess.Popen(['gunicorn','yomoyama.run:app', '-b', '%s:%s'%(target_ip, target_port), '--log-file', 'app.log', '--log-level', 'debug'])
     try:
         sh('./gradlew cleanTest firefoxTest')
     finally:
