@@ -15,3 +15,11 @@ def github_access_token():
 import yomoyama.models
 import yomoyama.views
 import yomoyama.github
+
+if 'LOGGED_IN_AS' in app.config:
+    forced_login_user = yomoyama.models.User('')
+    forced_login_user.username = app.config['LOGGED_IN_AS']
+    yomoyama.models.db_session.add(forced_login_user)
+    yomoyama.models.db_session.commit()
+else:
+    forced_login_user = None

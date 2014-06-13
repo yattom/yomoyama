@@ -11,7 +11,14 @@ class NewBookTest extends GebReportingTest {
     @Test
     void anExample() {
         to TopPage
+        newBookLink.click()
+        report('1')
 
-        newBookLink.text() == "登録"
+        at NewBookPage
+        page.registerBook('T', 'R', 'B')
+        report('2')
+
+        waitFor(at(TopPage))
+        report('3')
     }
 }

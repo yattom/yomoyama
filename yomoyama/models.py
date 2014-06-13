@@ -126,7 +126,10 @@ class WorkingDirectory(object):
 
     def initialize_repository(self):
         assert os.access(self.dir_path, os.F_OK) == False, 'book working directory already exists'
-        url_with_auth = 'https://' + self.access_token + '@' + self.repo_url[8:]
+        if self.access_token.startswith('https://'):
+            url_with_auth = 'https://' + self.access_token + '@' + self.repo_url[8:]
+        else:
+            url_with_auth = self.repo_url
         os.mkdir(self.dir_path)
         # git operation is always pull (do not clone)
         # see https://github.com/blog/1270-easier-builds-and-deployments-using-git-over-https-and-oauth
