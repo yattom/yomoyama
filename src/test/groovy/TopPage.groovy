@@ -5,6 +5,6 @@ class TopPage extends Page {
     static at = { title == "yomoyama" }
     static content = {
         newBookLink { $("a", text: "本を登録") }
+        availableBooks { $("ul.available_books a") }
     }
 }
-

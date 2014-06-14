@@ -3,6 +3,7 @@ import os
 import logging
 app = Flask(__name__)
 app.logger.addHandler(logging.StreamHandler())
+app.logger.setLevel(logging.DEBUG)
 
 app.config.from_object('yomoyama.default_config')
 

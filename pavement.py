@@ -13,8 +13,25 @@ def test_end2end():
     os.environ['TARGET_PORT'] = target_port = '5001'
     tempdir = tempfile.mkdtemp()
     data_dir = os.path.join(tempdir, 'data')
+    repo_dir = os.path.join(data_dir, 'repo')
     books_dir = os.path.join(data_dir, 'books')
     os.mkdir(data_dir)
+
+    os.mkdir(repo_dir)
+    sh('git init', cwd=repo_dir)
+    txt = '''
+English Paragraph 1.
+
+English Paragraph 2.
+Line 2.
+Line 3.
+'''
+    with open(os.path.join(repo_dir, 'foo.txt'), 'w') as f:
+        f.write(txt)
+    sh('git add foo.txt', cwd=repo_dir)
+    sh('git commit -m "initial"', cwd=repo_dir)
+    os.environ['ORIGINAL_REPO_URL'] = repo_dir
+
     os.mkdir(books_dir)
     os.environ['BOOKS_DIR'] = books_dir
     os.environ['DISPLAY'] = ':1'

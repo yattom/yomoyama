@@ -85,7 +85,7 @@ class Book(Base):
     def texts(self):
         file_names = []
         def fn(arg, dirname, fnames):
-            for f in fnames:
+            for f in fnames[:]:
                 if f.startswith('.'):
                     fnames.remove(f)
                     continue

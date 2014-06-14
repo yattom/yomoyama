@@ -6,7 +6,7 @@
   <div>
     <a href='{{ url_for("pull_book", book_id=book.id) }}'>Click</a> to pull latest.
   </div>
-  <ul>
+  <ul class='files'>
     {% for fname in book.texts() %}
       <li><a href='{{ url_for("text", book_id=book.id, text_id=fname) }}'>{{ fname }}</a></li>
     {% endfor %}
