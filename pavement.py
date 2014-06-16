@@ -6,6 +6,14 @@ import subprocess
 import tempfile
 
 @task
+def run():
+    os.environ['PYTHONPATH'] = '.'
+    os.environ['YOMOYAMA_CONFIG'] = '../local_config.py'
+    os.environ['TARGET_IP'] = target_ip = '127.0.0.1'
+    os.environ['TARGET_PORT'] = target_port = '5000'
+    sh('gunicorn yomoyama.run:app -b %s:%s'%(target_ip, target_port))
+
+@task
 def test_end2end():
     os.environ['PYTHONPATH'] = '.'
     os.environ['YOMOYAMA_CONFIG'] = '../test_config.py'
