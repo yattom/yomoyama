@@ -9,9 +9,7 @@ import tempfile
 def run():
     os.environ['PYTHONPATH'] = '.'
     os.environ['YOMOYAMA_CONFIG'] = '../local_config.py'
-    os.environ['TARGET_IP'] = target_ip = '127.0.0.1'
-    os.environ['TARGET_PORT'] = target_port = '5000'
-    sh('gunicorn yomoyama.run:app -b %s:%s'%(target_ip, target_port))
+    sh('python yomoyama/run.py')
 
 @task
 def test_end2end():
