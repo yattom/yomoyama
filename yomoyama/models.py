@@ -126,7 +126,7 @@ class WorkingDirectory(object):
 
     def initialize_repository(self):
         assert os.access(self.dir_path, os.F_OK) == False, 'book working directory already exists'
-        if self.access_token.startswith('https://'):
+        if self.repo_url.startswith('https://'):
             url_with_auth = 'https://' + self.access_token + '@' + self.repo_url[8:]
         else:
             url_with_auth = self.repo_url
