@@ -10,7 +10,6 @@ github = GitHub(app)
 @app.before_request
 def before_request():
     g.user = None
-    app.logger.debug('before_request: user->%s'%(yomoyama.forced_login_user))
     if yomoyama.forced_login_user:
         g.user = yomoyama.forced_login_user
     elif 'user_id' in session:
