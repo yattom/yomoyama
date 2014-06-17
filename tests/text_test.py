@@ -239,6 +239,18 @@ class TextTest(unittest.TestCase):
         paragraph.original().update(u'Modified')
         assert_that(paragraph.id, is_not(id_before))
 
+class TextWordCountTest(unittest.TestCase):
+    def test_words(self):
+        t = load_data('many_para')
+        assert_that(t.paragraphs[0].words, is_(7))
+        assert_that(t.paragraphs[0].words_so_far, is_(7))
+        assert_that(t.paragraphs[1].words, is_(6))
+        assert_that(t.paragraphs[1].words_so_far, is_(7 + 6))
+        assert_that(t.paragraphs[2].words, is_(3))
+        assert_that(t.paragraphs[2].words_so_far, is_(7 + 6 + 3))
+        assert_that(t.paragraphs[3].words, is_(0))
+        assert_that(t.paragraphs[3].words_so_far, is_(7 + 6 + 3 + 0))
+
 class TextIsTranslated(unittest.TestCase):
     def test_english(self):
         assert_that(text.Text.is_translated('The quick brown fox jumps over a lazy dog.'), is_(False))

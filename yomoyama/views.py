@@ -30,7 +30,8 @@ def text(book_id, text_id):
     book_dir = Book.book_dir(book_id)
     validate_text_id(book_dir, text_id)
     text = Text(book_dir + os.sep + text_id)
-    return render_template('text.html', text_id=text_id, text=text)
+    total_words = sum([p.words for p in text.paragraphs])
+    return render_template('text.html', text_id=text_id, text=text, total_words=total_words)
 
 @app.route('/books/<book_id>/files/<path:text_id>/paragraphs/<p_id>', methods=['PUT'])
 def update_paragraph(book_id, text_id, p_id):

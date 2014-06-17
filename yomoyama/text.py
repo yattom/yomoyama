@@ -3,6 +3,10 @@ from flask import json
 from codecs import open
 import re
 
+def count_word(s):
+    return len([w for w in re.split('\W+', s) if w])
+
+
 class Text(object):
     def __init__(self, path):
         self.path = path
@@ -20,6 +24,7 @@ class Text(object):
         lines = Text.split_into_lines(self.data)
         blocks = Text.split_into_blocks(self.data, lines)
         self.paragraphs = self.parse_into_paragraphs(lines, blocks)
+        self.words = sum([p.words for p in self.paragraphs])
 
     @staticmethod
     def split_into_lines(data):
@@ -66,6 +71,7 @@ class Text(object):
                 original_span = (lines[start][0], lines[first_translated][0])
                 translated_span = (lines[first_translated][0], lines[end][1])
             paragraph = Paragraph(self, original_span, translated_span)
+            paragraph.words_so_far = paragraph.words + sum([p.words for p in paragraphs])
             paragraphs.append(paragraph)
         return paragraphs
 
@@ -126,6 +132,7 @@ class Paragraph(object):
         self._translated = self.text.fragment(*translated_span)
         self._translated.validator = Paragraph.TranslatedPartValidator()
         self._translated.normalizer = Paragraph.ParagraphNormalizer()
+        self.words = count_word(unicode(self._original))
 
     def original(self):
         if not self._original: return None
