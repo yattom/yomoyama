@@ -5,7 +5,9 @@ man/
 local/
 data/books
 data/*.db
+build/
 local_config.py
+.gradle
 *.pyc
 *.pyo
 *~

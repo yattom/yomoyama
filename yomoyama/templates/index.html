@@ -16,7 +16,7 @@
 {% endif %}
 <div>
   Available books:
-  <ul>
+  <ul class='available_books'>
   {% for book in books %}
     <li>
       <a href="{{ url_for("book", book_id=book.id) }}">{{book.title}}</a>

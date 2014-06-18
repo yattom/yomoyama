@@ -1,6 +1,7 @@
 from flask import request, session, g, url_for, redirect, json
 from flask import render_template_string
 from flask.ext.github import GitHub
+import yomoyama
 from yomoyama import app
 from yomoyama.models import User, db_session
 
@@ -9,7 +10,9 @@ github = GitHub(app)
 @app.before_request
 def before_request():
     g.user = None
-    if 'user_id' in session:
+    if yomoyama.forced_login_user:
+        g.user = yomoyama.forced_login_user
+    elif 'user_id' in session:
         g.user = User.query.get(session['user_id'])
 
 @app.after_request

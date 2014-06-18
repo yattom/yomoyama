@@ -1,0 +1,47 @@
+apply plugin: "groovy"
+ 
+repositories {
+    mavenCentral()
+}
+ 
+configurations {
+    testCompile.transitive = true
+}
+ 
+ext.drivers = ["firefox", "chrome"]
+
+dependencies {
+    def gebVersion = "0.9.3"
+    def seleniumVersion = "2.42.0"
+ 
+    // If using Spock, need to depend on geb-spock
+    testCompile "org.gebish:geb-spock:$gebVersion"
+    testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
+ 
+    // If using JUnit, need to depend on geb-junit (3 or 4)
+    testCompile "org.gebish:geb-junit4:$gebVersion"
+    testCompile "junit:junit-dep:4.11"
+ 
+    // Need a driver implementation
+    drivers.each { driver ->
+        testCompile "org.seleniumhq.selenium:selenium-$driver-driver:$seleniumVersion"
+    }
+    testCompile "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
+    testRuntime "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
+}
+
+drivers.each { driver ->
+    task "${driver}Test"(type: Test) {
+        reports {
+            html.destination = reporting.file("$name/tests")
+            junitXml.destination = file("$buildDir/test-results/$name")
+        }
+
+        systemProperty "geb.build.reportsDir", reporting.file("$name/geb")
+        systemProperty "geb.env", driver
+
+        // If you wanted to set the baseUrl in your build…
+        // systemProperty "geb.build.baseUrl", "http://myapp.com"
+        systemProperty "geb.build.baseUrl", "http://${System.env.TARGET_IP}:${System.env.TARGET_PORT}"
+    }
+} 
