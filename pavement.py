@@ -12,6 +12,10 @@ def run():
     sh('python yomoyama/run.py')
 
 @task
+def test_unit():
+    sh('nosetests -s --with-doctest tests')
+
+@task
 def test_end2end():
     os.environ['PYTHONPATH'] = '.'
     os.environ['YOMOYAMA_CONFIG'] = '../test_config.py'
