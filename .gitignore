@@ -6,6 +6,7 @@ local/
 data/books
 data/*.db
 build/
+node_modules/
 local_config.py
 .gradle
 *.pyc

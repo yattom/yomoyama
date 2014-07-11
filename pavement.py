@@ -55,3 +55,17 @@ Line 3.
         x.terminate()
         devnull.close()
         sh('rm -rf %s'%(tempdir))
+
+@task
+def install_coffee():
+    os.environ['PREFIX'] = os.path.dirname(os.path.abspath(__file__))
+    sh('wget http://nodejs.org/dist/v0.10.29/node-v0.10.29.tar.gz')
+    sh('tar zxvf node-v0.10.29.tar.gz')
+    sh('./configure --prefix=$PREFIX', cwd='node-v0.10.29')
+    sh('make', cwd='node-v0.10.29')
+    sh('make install', cwd='node-v0.10.29')
+    sh('rm -rf node-v0.10.29 node-v0.10.29.tar.gz')
+    sh('npm install coffee-script')
+    sh('ln -s ../node_modules/coffee-script/bin/cake', cwd='bin')
+    sh('ln -s ../node_modules/coffee-script/bin/coffee', cwd='bin')
+
