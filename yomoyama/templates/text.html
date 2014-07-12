@@ -7,27 +7,29 @@
 <script type="text/javascript" src="{{ url_for('static', filename='scripts/text.js') }}"></script>
 </head>
 <body>
+  <div class="pargraphs">
 {% for paragraph in text.paragraphs %}
-  <div class="paragraph" data-p-id="{{ paragraph.id }}">
-    <div class="en">
-      {{ paragraph.original() }}
-      <span>({{ paragraph.words_so_far }} / {{ text.words }})</span>
-    </div>
-    <div class="ja">
-      <div class="display">
-        <p>
-          {% for l in paragraph.translated().value().split('\n') %}
-            {{ l }}<br>
-          {% endfor %}
-        </p>
-        <span class="edit" data-p-id="{{ paragraph.id }}">Edit</span>
+    <div class="paragraph" data-p-id="{{ paragraph.id }}">
+      <div class="en">
+        {{ paragraph.original() }}
+        <span>({{ paragraph.words_so_far }} / {{ text.words }})</span>
       </div>
-      <div class="editor">
-        <textarea>{{ paragraph.translated() }}</textarea>
-        <span class="save" data-p-id="{{ paragraph.id }}">Save</span>
+      <div class="ja">
+        <div class="display">
+          <p>
+            {% for l in paragraph.translated().value().split('\n') %}
+              {{ l }}<br>
+            {% endfor %}
+          </p>
+          <span class="edit" data-p-id="{{ paragraph.id }}">Edit</span>
+        </div>
+        <div class="editor">
+          <textarea>{{ paragraph.translated() }}</textarea>
+          <span class="save" data-p-id="{{ paragraph.id }}">Save</span>
+        </div>
       </div>
     </div>
-  </div>
 {% endfor %}
+  </div>
 </body>
 

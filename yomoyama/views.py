@@ -71,7 +71,14 @@ def get_paragraph(book_id, text_id, p_id):
             break
     else:
         return 404
-    return jsonify({'original': para.original().value(), 'translated': para.translated().value(), 'id': para.id})
+    resp = {
+        'original': para.original().value(),
+        'translated': para.translated().value(),
+        'id': para.id,
+        'words_so_far': para.words_so_far,
+        'words': text.words,
+    }
+    return jsonify(resp)
 
 @app.route('/books/<book_id>')
 def book(book_id):

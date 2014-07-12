@@ -27,10 +27,16 @@ do_save = ->
         return
       $.get $(location).attr('href') + '/paragraphs/' + resp.paragraph_id, (data) ->
         $('div[data-p-id=' + data.id + ']').html("""
-<div class="en">#{data.original}</div>
+<div class="en">
+  #{data.original}
+  <span>(#{data.words_so_far} / #{data.words})</span>
+</div>
 <div class="ja">
   <div class="display">
-    <p>#{data.translated.split('\n').join('<br>')}</p>
+    <p>
+      #{data.translated.split('\n').join('<br>')}
+      <br>
+    </p>
     <span class="edit" data-p-id="#{data.id}">Edit</span>
   </div>
   <div class="editor">

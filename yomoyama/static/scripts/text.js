@@ -34,7 +34,7 @@
           return;
         }
         return $.get($(location).attr('href') + '/paragraphs/' + resp.paragraph_id, function(data) {
-          $('div[data-p-id=' + data.id + ']').html("<div class=\"en\">" + data.original + "</div>\n<div class=\"ja\">\n  <div class=\"display\">\n    <p>" + (data.translated.split('\n').join('<br>')) + "</p>\n    <span class=\"edit\" data-p-id=\"" + data.id + "\">Edit</span>\n  </div>\n  <div class=\"editor\">\n    <textarea>" + data.translated + "</textarea>\n    <span class=\"save\" data-p-id=\"" + data.id + "\">Save</span>\n  </div>\n</div>");
+          $('div[data-p-id=' + data.id + ']').html("<div class=\"en\">\n  " + data.original + "\n  <span>(" + data.words_so_far + " / " + data.words + ")</span>\n</div>\n<div class=\"ja\">\n  <div class=\"display\">\n    <p>\n      " + (data.translated.split('\n').join('<br>')) + "\n      <br>\n    </p>\n    <span class=\"edit\" data-p-id=\"" + data.id + "\">Edit</span>\n  </div>\n  <div class=\"editor\">\n    <textarea>" + data.translated + "</textarea>\n    <span class=\"save\" data-p-id=\"" + data.id + "\">Save</span>\n  </div>\n</div>");
           $('div[data-p-id=' + data.id + '] .display').show();
           $('div[data-p-id=' + data.id + '] .editor').hide();
           $('div[data-p-id=' + data.id + '] .editor textarea').flexible();
