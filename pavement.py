@@ -69,3 +69,10 @@ def install_coffee():
     sh('ln -s ../node_modules/coffee-script/bin/cake', cwd='bin')
     sh('ln -s ../node_modules/coffee-script/bin/coffee', cwd='bin')
 
+@task
+def coffee():
+    sh('coffee --compile yomoyama/static/scripts/*.coffee')
+
+@task
+def coffeew():
+    sh('coffee --compile --watch yomoyama/static/scripts/*.coffee')
