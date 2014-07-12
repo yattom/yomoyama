@@ -66,13 +66,23 @@ def get_paragraph(book_id, text_id, p_id):
     book_dir = Book.book_dir(book_id)
     validate_text_id(book_dir, text_id)
     text = Text(book_dir + os.sep + text_id)
-    for para in text.paragraphs:
-        if para.id == p_id:
-            break
+    if p_id == 'all':
+        paras = []
+        for para in text.paragraphs:
+            paras.append(return_paragraph(text, para))
+        return jsonify({'paragraphs': paras})
     else:
-        return 404
+        for para in text.paragraphs:
+            if para.id == p_id:
+                break
+        else:
+            return 404
 
-    d = {'Scrum': u'スクラム'}
+        resp = return_paragraph(text, para)
+        return jsonify(resp)
+
+def return_paragraph(text, para):
+    d = {'Scrum': u'スクラム', 'Rebecca': u'レベッカ'}
     dictionary = []
     for e, j in d.items():
         try:
@@ -97,7 +107,7 @@ def get_paragraph(book_id, text_id, p_id):
         'words': text.words,
         'dictionary': dictionary,
     }
-    return jsonify(resp)
+    return resp
 
 @app.route('/books/<book_id>')
 def book(book_id):

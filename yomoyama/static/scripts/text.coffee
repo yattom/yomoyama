@@ -15,7 +15,8 @@ build_en_part = (pId, original, dictionary) ->
     for idx in [dic[0][0]...dic[0][1]]
       words[idx].addClass('in_dict')
       words[idx].attr('data-dict-entry-id', pId + '#' + i)
-      words[idx].hover(highlight_dict_entry, unhighlight_dict_entry)
+      if dic[1] != null
+        words[idx].hover(highlight_dict_entry, unhighlight_dict_entry)
   div_en = $('div[data-p-id=' + pId + '] div.en span.word-count')
   div_en.before w for w in words
 
@@ -69,6 +70,12 @@ render_paragraph = (data) ->
 load_paragraph = (paragraph_id) ->
   $.get $(location).attr('href') + '/paragraphs/' + paragraph_id, render_paragraph
 
+render_all_paragraph = (data) ->
+  render_paragraph(para) for para in data.paragraphs
+
+load_all_paragraphs = ->
+  $.get $(location).attr('href') + '/paragraphs/all', render_all_paragraph
+
 do_edit = ->
   pId = $(this).data('pId')
   $('div[data-p-id=' + pId + '] .display').hide()
@@ -100,6 +107,7 @@ do_save = ->
 
 $ ->
   $('body').data('session_started_at', $.now())
-  $('div.paragraph').each ->
-    pId = $(this).data('pId')
-    load_paragraph(pId)
+  load_all_paragraphs()
+#  $('div.paragraph').each ->
+#    pId = $(this).data('pId')
+#    load_paragraph(pId)
