@@ -71,19 +71,31 @@ def get_paragraph(book_id, text_id, p_id):
             break
     else:
         return 404
-    dictionary = [[(0, 1), (5, 10), 'YIPPIE!']]
-    en_dictionary = [['']] * len(para.original().value().split())
-    for e, j, s in dictionary:
-        for i in range(*e):
-            print i, e
-            en_dictionary[i] = [s]
+
+    d = {'Scrum': u'スクラム'}
+    dictionary = []
+    for e, j in d.items():
+        try:
+            e_i = para.original().value().split().index(e)
+        except ValueError:
+            continue
+        try:
+            j_i = para.translated().value().index(j)
+        except ValueError:
+            j_i = -1
+        desc = u'%s: %s'%(e, j)
+        if j_i < 0:
+            dictionary.append([(e_i, e_i + 1), None, desc])
+        else:
+            dictionary.append([(e_i, e_i + 1), (j_i, j_i + len(j)), desc])
+
     resp = {
         'original': para.original().value().split(),
         'translated': list(para.translated().value()),
         'id': para.id,
         'words_so_far': para.words_so_far,
         'words': text.words,
-        'en_dictionary': en_dictionary,
+        'dictionary': dictionary,
     }
     return jsonify(resp)
 

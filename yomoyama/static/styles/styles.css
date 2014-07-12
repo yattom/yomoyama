@@ -34,3 +34,7 @@ textarea {
 span.in_dict {
     color: red;
 }
+
+.dict-entry-highlight {
+	background-color: blue;
+}

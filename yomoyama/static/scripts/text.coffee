@@ -1,23 +1,47 @@
+highlight_dict_entry = ->
+  dictEntryId = $(this).data('dictEntryId')
+  $('[data-dict-entry-id=' + dictEntryId + ']').addClass('dict-entry-highlight')
+
+unhighlight_dict_entry = ->
+  dictEntryId = $(this).data('dictEntryId')
+  $('[data-dict-entry-id=' + dictEntryId + ']').removeClass('dict-entry-highlight')
+
+build_en_part = (pId, original, dictionary) ->
+  words = []
+  for w, i in original
+    word = $("<span data-w-id='" + i + "'>" + w + " </span>")
+    words.push(word)
+  for dic, i in dictionary
+    for idx in [dic[0][0]...dic[0][1]]
+      words[idx].addClass('in_dict')
+      words[idx].attr('data-dict-entry-id', pId + '#' + i)
+      words[idx].hover(highlight_dict_entry, unhighlight_dict_entry)
+  div_en = $('div[data-p-id=' + pId + '] div.en span.word-count')
+  div_en.before w for w in words
+
+build_ja_part = (pId, original, dictionary) ->
+  words = []
+  for w, i in original
+    word = $("<span data-w-id='" + i + "'>" + w + "</span>")
+    words.push(word)
+  for dic, i in dictionary
+    if dic[1] == null
+      continue
+    for idx in [dic[1][0]...dic[1][1]]
+      words[idx].addClass('in_dict')
+      words[idx].attr('data-dict-entry-id', pId + '#' + i)
+      words[idx].hover(highlight_dict_entry, unhighlight_dict_entry)
+  div_ja = $('div[data-p-id=' + pId + '] div.ja div.display p')
+  div_ja.append w for w in words
+
 render_paragraph = (data) ->
-  en_text = ""
-  for w, i in data.original
-    if data.en_dictionary[i][0] != ''
-      en_text += "<span data-w-id='" + i + "' class='in_dict'>" + w + "</span> "
-    else
-      en_text += "<span data-w-id='" + i + "'>" + w + "</span> "
-  ja_text = ""
-  ja_text += "<span data-w-id='" + i + "'>" + c + "</span>" for c, i in data.translated
   $('div[data-p-id=' + data.id + ']').html("""
 <div class="en">
-  #{en_text}
-  <span>(#{data.words_so_far} / #{data.words})</span>
+  <span class='word-count'>(#{data.words_so_far} / #{data.words})</span>
 </div>
 <div class="ja">
   <div class="display">
-    <p>
-      #{ja_text}
-      <br>
-    </p>
+    <p></p>
     <span class="edit" data-p-id="#{data.id}">Edit</span>
   </div>
   <div class="editor">
@@ -26,6 +50,8 @@ render_paragraph = (data) ->
   </div>
 </div>
 """)
+  build_en_part data.id, data.original, data.dictionary
+  build_ja_part data.id, data.translated, data.dictionary
 #  for dict_entry in data.dictionary
 #    en = dict_entry[0]
 #    ja = dict_entry[1]
