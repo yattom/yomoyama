@@ -3,7 +3,24 @@
   var do_edit, do_save, load_paragraph, render_paragraph;
 
   render_paragraph = function(data) {
-    $('div[data-p-id=' + data.id + ']').html("<div class=\"en\">\n  " + data.original + "\n  <span>(" + data.words_so_far + " / " + data.words + ")</span>\n</div>\n<div class=\"ja\">\n  <div class=\"display\">\n    <p>\n      " + (data.translated.split('\n').join('<br>')) + "\n      <br>\n    </p>\n    <span class=\"edit\" data-p-id=\"" + data.id + "\">Edit</span>\n  </div>\n  <div class=\"editor\">\n    <textarea>" + data.translated + "</textarea>\n    <span class=\"save\" data-p-id=\"" + data.id + "\">Save</span>\n  </div>\n</div>");
+    var c, en_text, i, ja_text, w, _i, _j, _len, _len1, _ref, _ref1;
+    en_text = "";
+    _ref = data.original;
+    for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+      w = _ref[i];
+      if (data.en_dictionary[i][0] !== '') {
+        en_text += "<span data-w-id='" + i + "' class='in_dict'>" + w + "</span> ";
+      } else {
+        en_text += "<span data-w-id='" + i + "'>" + w + "</span> ";
+      }
+    }
+    ja_text = "";
+    _ref1 = data.translated;
+    for (i = _j = 0, _len1 = _ref1.length; _j < _len1; i = ++_j) {
+      c = _ref1[i];
+      ja_text += "<span data-w-id='" + i + "'>" + c + "</span>";
+    }
+    $('div[data-p-id=' + data.id + ']').html("<div class=\"en\">\n  " + en_text + "\n  <span>(" + data.words_so_far + " / " + data.words + ")</span>\n</div>\n<div class=\"ja\">\n  <div class=\"display\">\n    <p>\n      " + ja_text + "\n      <br>\n    </p>\n    <span class=\"edit\" data-p-id=\"" + data.id + "\">Edit</span>\n  </div>\n  <div class=\"editor\">\n    <textarea>" + (data.translated.join('')) + "</textarea>\n    <span class=\"save\" data-p-id=\"" + data.id + "\">Save</span>\n  </div>\n</div>");
     $('div[data-p-id=' + data.id + '] .display').show();
     $('div[data-p-id=' + data.id + '] .editor').hide();
     $('div[data-p-id=' + data.id + '] .editor textarea').flexible();

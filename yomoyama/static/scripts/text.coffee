@@ -1,23 +1,39 @@
 render_paragraph = (data) ->
+  en_text = ""
+  for w, i in data.original
+    if data.en_dictionary[i][0] != ''
+      en_text += "<span data-w-id='" + i + "' class='in_dict'>" + w + "</span> "
+    else
+      en_text += "<span data-w-id='" + i + "'>" + w + "</span> "
+  ja_text = ""
+  ja_text += "<span data-w-id='" + i + "'>" + c + "</span>" for c, i in data.translated
   $('div[data-p-id=' + data.id + ']').html("""
 <div class="en">
-  #{data.original}
+  #{en_text}
   <span>(#{data.words_so_far} / #{data.words})</span>
 </div>
 <div class="ja">
   <div class="display">
     <p>
-      #{data.translated.split('\n').join('<br>')}
+      #{ja_text}
       <br>
     </p>
     <span class="edit" data-p-id="#{data.id}">Edit</span>
   </div>
   <div class="editor">
-    <textarea>#{data.translated}</textarea>
+    <textarea>#{data.translated.join('')}</textarea>
     <span class="save" data-p-id="#{data.id}">Save</span>
   </div>
 </div>
 """)
+#  for dict_entry in data.dictionary
+#    en = dict_entry[0]
+#    ja = dict_entry[1]
+#    for i in [en[0]...en[1]]
+#      $('div[data-p-id=' + data.id + '] .en span[data-w-id = ' + i + ']').css('color', 'red')
+#    for i in [ja[0]...ja[1]]
+#      $('div[data-p-id=' + data.id + '] .ja span[data-w-id = ' + i + ']').css('color', 'green')
+
   $('div[data-p-id=' + data.id + '] .display').show()
   $('div[data-p-id=' + data.id + '] .editor').hide()
   $('div[data-p-id=' + data.id + '] .editor textarea').flexible()

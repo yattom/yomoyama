@@ -30,3 +30,7 @@ p {
 textarea {
     width: 100%;
 }
+
+span.in_dict {
+    color: red;
+}
