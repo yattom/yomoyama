@@ -107,7 +107,8 @@ do_save = ->
 
 $ ->
   $('body').data('session_started_at', $.now())
-  load_all_paragraphs()
-#  $('div.paragraph').each ->
-#    pId = $(this).data('pId')
-#    load_paragraph(pId)
+# FIXME: load all is awkwardly slow so don't use for now
+#  load_all_paragraphs()
+  $('div.paragraph').each ->
+    pId = $(this).data('pId')
+    load_paragraph(pId)

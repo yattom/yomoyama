@@ -137,7 +137,11 @@
 
   $(function() {
     $('body').data('session_started_at', $.now());
-    return load_all_paragraphs();
+    return $('div.paragraph').each(function() {
+      var pId;
+      pId = $(this).data('pId');
+      return load_paragraph(pId);
+    });
   });
 
 }).call(this);
