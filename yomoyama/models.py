@@ -138,7 +138,10 @@ class WorkingDirectory(object):
         self.git('pull', url_with_auth, self.remote_branch)
 
     def commit_and_push(self, work_time_ms=0):
-        url_with_auth = 'https://' + self.access_token + '@' + self.repo_url[8:]
+        if self.repo_url.startswith('https://'):
+            url_with_auth = 'https://' + self.access_token + '@' + self.repo_url[8:]
+        else:
+            url_with_auth = self.repo_url
         self.git('add', '-u')
         comment = 'updated'
         if work_time_ms:

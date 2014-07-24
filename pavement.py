@@ -40,6 +40,7 @@ Line 3.
         f.write(txt)
     sh('git add foo.txt', cwd=repo_dir)
     sh('git commit -m "initial"', cwd=repo_dir)
+    sh('git branch work_test', cwd=repo_dir)
     os.environ['ORIGINAL_REPO_URL'] = repo_dir
 
     os.mkdir(books_dir)
