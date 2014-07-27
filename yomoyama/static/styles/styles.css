@@ -39,14 +39,14 @@ span.in_dict {
 	background-color: blue;
 }
 
-#dict_area {
+#glossary_area {
 	position: fixed;
 	top: 0px;
 	right: 0px;
 	border: solid 1px;
 }
 
-#dict_area #new_entry {
+#glossary_area #new_entry {
 	border: double 3px;
 	margin: 4px;
 	padding: 3px;
