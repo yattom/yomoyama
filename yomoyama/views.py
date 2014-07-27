@@ -10,6 +10,7 @@ from yomoyama import app
 
 from text import Text
 from models import Book, User, BookForUser, db_session
+from glossary import GlossaryOnFile
 
 @app.route('/about')
 def about():
@@ -31,7 +32,7 @@ def text(book_id, text_id):
     validate_text_id(book_dir, text_id)
     text = Text(book_dir + os.sep + text_id)
     total_words = sum([p.words for p in text.paragraphs])
-    return render_template('text.html', text_id=text_id, text=text, total_words=total_words)
+    return render_template('text.html', book_id=book_id, text_id=text_id, text=text, total_words=total_words)
 
 @app.route('/books/<book_id>/files/<path:text_id>/paragraphs/<p_id>', methods=['PUT'])
 def update_paragraph(book_id, text_id, p_id):
@@ -132,3 +133,12 @@ def validate_text_id(book_dir, text_id):
     path = book_dir + os.sep + text_id
     if not os.path.abspath(path).startswith(book_dir):
         raise ValueError('invalid text_id')
+
+@app.route('/books/<book_id>/glossary/<original>', methods=['PUT'])
+def register_glossary(book_id, original):
+    translated = request.form['translated']
+    text_id = request.form['text_id']
+    glossary = GlossaryOnFile(book_id, os.path.join(Book.book_dir(book_id), 'glossary.rst'))
+    glossary.add_entry(original, translated, text_id)
+    glossary.save()
+    return "" # 200 ok

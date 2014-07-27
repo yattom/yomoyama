@@ -6,12 +6,28 @@
 <script type="text/javascript" src="{{ url_for('static', filename='scripts/jquery.flexibleArea.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='scripts/text.js') }}"></script>
 </head>
-<body>
+<body data-book-id="{{ book_id }}" data-text-id="{{ text_id }}">
   <div class="paragraphs">
 {% for paragraph in text.paragraphs %}
     <div class="paragraph" data-p-id="{{ paragraph.id }}">
     </div>
 {% endfor %}
+  </div>
+  <div id="dict_area">
+    辞書ツール
+    <div id="new_entry">
+      辞書登録
+      <div>
+        E: <span id="original"></span>
+      </div>
+      <div>
+        日: <span id="translated"></span>
+      </div>
+      <div>
+        <button id="clear">Clear</button>
+        <button id="register">Register</button>
+      </div>
+    </div>
   </div>
 </body>
 

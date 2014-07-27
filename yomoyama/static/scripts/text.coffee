@@ -66,7 +66,7 @@ render_paragraph = (data) ->
   $('div[data-p-id=' + data.id + '] .editor textarea').flexible()
   $('div[data-p-id=' + data.id + '] span.edit').click(do_edit)
   $('div[data-p-id=' + data.id + '] span.save').click(do_save)
-   
+
 load_paragraph = (paragraph_id) ->
   $.get $(location).attr('href') + '/paragraphs/' + paragraph_id, render_paragraph
 
@@ -105,6 +105,28 @@ do_save = ->
         return
       load_paragraph(resp.paragraph_id)
 
+setup_selected_event_handlers = ->
+  $('body').mouseup ->
+    selection = window.getSelection()
+    return if selection.toString() == ""
+    if $(selection.getRangeAt(0).startContainer).closest('.en').length > 0
+      $('#new_entry #original').text(selection.toString())
+    if $(selection.getRangeAt(0).startContainer).closest('.ja').length > 0
+      $('#new_entry #translated').text(selection.toString())
+  $('#new_entry button#clear').click ->
+    $('#new_entry #original').text("")
+    $('#new_entry #translated').text("")
+  $('#new_entry button#register').click ->
+    original = encodeURIComponent($('#new_entry #original').text())
+    $.ajax
+      url: "/books/#{$('body').data('bookId')}/glossary/#{original}"
+      type: 'PUT'
+      data:
+        original: $('#new_entry #original').text()
+        translated: $('#new_entry #translated').text()
+        text_id: $('body').data('textId')
+
+
 $ ->
   $('body').data('session_started_at', $.now())
 # FIXME: load all is awkwardly slow so don't use for now
@@ -112,3 +134,4 @@ $ ->
   $('div.paragraph').each ->
     pId = $(this).data('pId')
     load_paragraph(pId)
+  setup_selected_event_handlers()
