@@ -6,11 +6,15 @@ unhighlight_dict_entry = ->
   dictEntryId = $(this).data('dictEntryId')
   $('[data-dict-entry-id=' + dictEntryId + ']').removeClass('dict-entry-highlight')
 
-build_en_part = (pId, original, dictionary) ->
+words_to_spans = (pId, original) ->
   words = []
   for w, i in original
-    word = $("<span data-w-id='" + i + "'>" + w + " </span>")
+    word = $("<span data-w-id='" + i + "'>" + w + "</span>")
     words.push(word)
+  return words
+
+build_en_part = (pId, original, dictionary) ->
+  words = words_to_spans(pId, (w + ' ' for w in original))
   for dic, i in dictionary
     for idx in [dic[0][0]...dic[0][1]]
       words[idx].addClass('in_dict')
@@ -21,10 +25,7 @@ build_en_part = (pId, original, dictionary) ->
   div_en.before w for w in words
 
 build_ja_part = (pId, original, dictionary) ->
-  words = []
-  for w, i in original
-    word = $("<span data-w-id='" + i + "'>" + w + "</span>")
-    words.push(word)
+  words = words_to_spans(pId, original)
   for dic, i in dictionary
     if dic[1] == null
       continue
