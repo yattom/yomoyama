@@ -77,3 +77,10 @@ def coffee():
 @task
 def coffeew():
     sh('coffee --compile --watch yomoyama/static/scripts/*.coffee')
+
+@task
+def devup():
+    'run supporting processes -- coffee, http server for test results, tail app.log'
+    sh('screen -t coffee paver coffeew')
+    sh('screen -t httpserver python -m SimpleHTTPServer')
+    sh('screen screen tail -f app.log')
