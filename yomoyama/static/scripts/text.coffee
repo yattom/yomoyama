@@ -1,3 +1,21 @@
+class Glossary
+  constructor: ->
+    @glossary = {}
+
+  update: (key, entries) ->
+    if key not in @glossary
+      @glossary[key] = []
+    @glossary[key] = entries
+
+  entry: (key) ->
+    if @glossary[key] == undefined
+      return []
+    return @glossary[key]
+
+glossary = new Glossary
+glossary.update('team', ['チーム'])
+glossary.update('Marcus', ['マーカス'])
+
 highlight_dict_entry = ->
   dictEntryId = $(this).data('dictEntryId')
   $('[data-dict-entry-id=' + dictEntryId + ']').addClass('dict-entry-highlight')
@@ -36,8 +54,22 @@ build_ja_part = (pId, original, dictionary) ->
   div_ja = $('div[data-p-id=' + pId + '] div.ja div.display p')
   div_ja.append w for w in words
 
+apply_glossary_to_paragraph = (pId) ->
+  found = {}
+  $('div[data-p-id=' + pId + '] div.glossary').text('')
+  $('div[data-p-id=' + pId + '] div.en span').each ->
+    e = glossary.entry($(this).text().trim())
+    return if e == undefined
+    if e.length > 0 and found[e] == undefined
+      $('div[data-p-id=' + pId + '] div.glossary').append($("<div>#{$(this).text().trim()} : #{e}</div>"))
+      found[e] = 1
+  if found.length == 0
+    $('div[data-p-id=' + pId + '] div.glossary').html('&nbsp;')
+
+
 render_paragraph = (data) ->
   $('div[data-p-id=' + data.id + ']').html("""
+<div class="glossary">&nbsp;</div>
 <div class="en">
   <span class='word-count'>(#{data.words_so_far} / #{data.words})</span>
 </div>
@@ -54,6 +86,7 @@ render_paragraph = (data) ->
 """)
   build_en_part data.id, data.original, data.dictionary
   build_ja_part data.id, data.translated, data.dictionary
+  apply_glossary_to_paragraph data.id
 #  for dict_entry in data.dictionary
 #    en = dict_entry[0]
 #    ja = dict_entry[1]
@@ -127,7 +160,6 @@ setup_selected_event_handlers = ->
         translated: $('#new_entry #translated').text()
         text_id: $('body').data('textId')
 
-
 $ ->
   $('body').data('session_started_at', $.now())
 # FIXME: load all is awkwardly slow so don't use for now
@@ -136,3 +168,4 @@ $ ->
     pId = $(this).data('pId')
     load_paragraph(pId)
   setup_selected_event_handlers()
+

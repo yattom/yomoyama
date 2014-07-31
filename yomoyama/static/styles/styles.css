@@ -5,22 +5,28 @@ div.paragraph {
 	padding: 16px;
 }
 
+div.glossary {
+	float: right;
+	width: 15%;
+	margin: 1em;
+}
+
 div.en {
 	font-family: 'Lucida Grande', Meiryo, sans-serif;
 	font-size: 10.5pt;
-	display: inline;
-	float: right;
-	margin: 0;
-	width: 48%;
+	margin: 1em;
+	width: 35%;
 	color: #000080;
+	float: right;
 }
 
 div.ja {
 	font-family: 'Lucida Grande', Meiryo, sans-serif;
 	font-size: 10.5pt;
-	width: 48%;
+	width: 35%;
 	color: black;
-	margin: 0;
+	margin: 1em;
+	float: right;
 }
 
 p {
