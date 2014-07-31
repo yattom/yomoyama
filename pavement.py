@@ -72,11 +72,11 @@ def install_coffee():
 
 @task
 def coffee():
-    sh('coffee --compile yomoyama/static/scripts/*.coffee')
+    sh('coffee --compile --map static/scripts/*.coffee', cwd='yomoyama')
 
 @task
 def coffeew():
-    sh('coffee --compile --watch yomoyama/static/scripts/*.coffee')
+    sh('coffee --compile --watch --map static/scripts/*.coffee', cwd='yomoyama')
 
 @task
 def devup():
