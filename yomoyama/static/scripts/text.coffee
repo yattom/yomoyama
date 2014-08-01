@@ -13,7 +13,7 @@ class Glossary
     return @glossary[key]
 
 glossary = new Glossary
-glossary.update('team', ['チーム'])
+glossary.update('team', ['チーム', 'スクラムチーム'])
 glossary.update('Marcus', ['マーカス'])
 
 highlight_dict_entry = ->
@@ -27,7 +27,7 @@ unhighlight_dict_entry = ->
 words_to_spans = (pId, original) ->
   words = []
   for w, i in original
-    word = $("<span data-w-id='" + i + "'>" + w + "</span>")
+    word = $('<span data-w-id="' + i + '">' + w + '</span>')
     words.push(word)
   return words
 
@@ -56,14 +56,25 @@ build_ja_part = (pId, original, dictionary) ->
 
 apply_glossary_to_paragraph = (pId) ->
   found = {}
-  $('div[data-p-id=' + pId + '] div.glossary').text('')
+  $('div[data-p-id=' + pId + '] div.glossary').html('')
+  $('div[data-p-id=' + pId + '] div.editor_glossary').html('')
   $('div[data-p-id=' + pId + '] div.en span').each ->
-    e = glossary.entry($(this).text().trim())
-    return if e == undefined
-    if e.length > 0 and found[e] == undefined
-      $('div[data-p-id=' + pId + '] div.glossary').append($("<div>#{$(this).text().trim()} : #{e}</div>"))
-      found[e] = 1
+    word = $(this).text().trim()
+    entries = glossary.entry(word)
+    return if entries == undefined
+    if entries.length > 0 and found[word] == undefined
+      $("div[data-p-id=#{ pId }] div.glossary").append($("<div>#{ word } : #{entries}</div>"))
+      edit = $("<div>#{ word } </div>")
+      for e in entries
+        btn = $("<button>#{e}</button>")
+        btn.click ->
+          t = $('div[data-p-id=' + pId + '] div.ja textarea').text()
+          $('div[data-p-id=' + pId + '] div.ja textarea').text(t + e)
+        edit.append(btn)
+      $('div[data-p-id=' + pId + '] div.editor_glossary').append(edit)
+      found[word] = 1
   if found.length == 0
+    # prevent collapsing
     $('div[data-p-id=' + pId + '] div.glossary').html('&nbsp;')
 
 
@@ -81,6 +92,7 @@ render_paragraph = (data) ->
   <div class="editor">
     <textarea>#{data.translated.join('')}</textarea>
     <span class="save" data-p-id="#{data.id}">Save</span>
+    <div class="editor_glossary"></div>
   </div>
 </div>
 """)
@@ -142,14 +154,14 @@ do_save = ->
 setup_selected_event_handlers = ->
   $('body').mouseup ->
     selection = window.getSelection()
-    return if selection.toString() == ""
+    return if selection.toString() == ''
     if $(selection.getRangeAt(0).startContainer).closest('.en').length > 0
       $('#new_entry #original').text(selection.toString())
     if $(selection.getRangeAt(0).startContainer).closest('.ja').length > 0
       $('#new_entry #translated').text(selection.toString())
   $('#new_entry button#clear').click ->
-    $('#new_entry #original').text("")
-    $('#new_entry #translated').text("")
+    $('#new_entry #original').text('')
+    $('#new_entry #translated').text('')
   $('#new_entry button#register').click ->
     original = encodeURIComponent($('#new_entry #original').text())
     $.ajax

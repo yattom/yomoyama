@@ -28,7 +28,7 @@
 
   glossary = new Glossary;
 
-  glossary.update('team', ['チーム']);
+  glossary.update('team', ['チーム', 'スクラムチーム']);
 
   glossary.update('Marcus', ['マーカス']);
 
@@ -49,7 +49,7 @@
     words = [];
     for (i = _i = 0, _len = original.length; _i < _len; i = ++_i) {
       w = original[i];
-      word = $("<span data-w-id='" + i + "'>" + w + "</span>");
+      word = $('<span data-w-id="' + i + '">' + w + '</span>');
       words.push(word);
     }
     return words;
@@ -111,16 +111,30 @@
   apply_glossary_to_paragraph = function(pId) {
     var found;
     found = {};
-    $('div[data-p-id=' + pId + '] div.glossary').text('');
+    $('div[data-p-id=' + pId + '] div.glossary').html('');
+    $('div[data-p-id=' + pId + '] div.editor_glossary').html('');
     $('div[data-p-id=' + pId + '] div.en span').each(function() {
-      var e;
-      e = glossary.entry($(this).text().trim());
-      if (e === void 0) {
+      var btn, e, edit, entries, word, _i, _len;
+      word = $(this).text().trim();
+      entries = glossary.entry(word);
+      if (entries === void 0) {
         return;
       }
-      if (e.length > 0 && found[e] === void 0) {
-        $('div[data-p-id=' + pId + '] div.glossary').append($("<div>" + ($(this).text().trim()) + " : " + e + "</div>"));
-        return found[e] = 1;
+      if (entries.length > 0 && found[word] === void 0) {
+        $("div[data-p-id=" + pId + "] div.glossary").append($("<div>" + word + " : " + entries + "</div>"));
+        edit = $("<div>" + word + " </div>");
+        for (_i = 0, _len = entries.length; _i < _len; _i++) {
+          e = entries[_i];
+          btn = $("<button>" + e + "</button>");
+          btn.click(function() {
+            var t;
+            t = $('div[data-p-id=' + pId + '] div.ja textarea').text();
+            return $('div[data-p-id=' + pId + '] div.ja textarea').text(t + e);
+          });
+          edit.append(btn);
+        }
+        $('div[data-p-id=' + pId + '] div.editor_glossary').append(edit);
+        return found[word] = 1;
       }
     });
     if (found.length === 0) {
@@ -129,7 +143,7 @@
   };
 
   render_paragraph = function(data) {
-    $('div[data-p-id=' + data.id + ']').html("<div class=\"glossary\">&nbsp;</div>\n<div class=\"en\">\n  <span class='word-count'>(" + data.words_so_far + " / " + data.words + ")</span>\n</div>\n<div class=\"ja\">\n  <div class=\"display\">\n    <p></p>\n    <span class=\"edit\" data-p-id=\"" + data.id + "\">Edit</span>\n  </div>\n  <div class=\"editor\">\n    <textarea>" + (data.translated.join('')) + "</textarea>\n    <span class=\"save\" data-p-id=\"" + data.id + "\">Save</span>\n  </div>\n</div>");
+    $('div[data-p-id=' + data.id + ']').html("<div class=\"glossary\">&nbsp;</div>\n<div class=\"en\">\n  <span class='word-count'>(" + data.words_so_far + " / " + data.words + ")</span>\n</div>\n<div class=\"ja\">\n  <div class=\"display\">\n    <p></p>\n    <span class=\"edit\" data-p-id=\"" + data.id + "\">Edit</span>\n  </div>\n  <div class=\"editor\">\n    <textarea>" + (data.translated.join('')) + "</textarea>\n    <span class=\"save\" data-p-id=\"" + data.id + "\">Save</span>\n    <div class=\"editor_glossary\"></div>\n  </div>\n</div>");
     build_en_part(data.id, data.original, data.dictionary);
     build_ja_part(data.id, data.translated, data.dictionary);
     apply_glossary_to_paragraph(data.id);
@@ -199,7 +213,7 @@
     $('body').mouseup(function() {
       var selection;
       selection = window.getSelection();
-      if (selection.toString() === "") {
+      if (selection.toString() === '') {
         return;
       }
       if ($(selection.getRangeAt(0).startContainer).closest('.en').length > 0) {
@@ -210,8 +224,8 @@
       }
     });
     $('#new_entry button#clear').click(function() {
-      $('#new_entry #original').text("");
-      return $('#new_entry #translated').text("");
+      $('#new_entry #original').text('');
+      return $('#new_entry #translated').text('');
     });
     return $('#new_entry button#register').click(function() {
       var original;
