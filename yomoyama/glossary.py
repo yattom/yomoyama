@@ -11,31 +11,31 @@ class Glossary(object):
         self.dic = {}
 
     def add_entry(self, original, translation, text_id):
-        key = self.normalize(original)
+        key = self._normalize(original)
         if not key in self.dic:
             self.dic[key] = []
-        normalized_translation = self.normalize(translation)
+        normalized_translation = self._normalize(translation)
         for t, tid in self.dic[key]:
             if t == normalized_translation:
                 if text_id in tid: return
                 tid.append(text_id)
                 return
-        self.dic[key].append((self.normalize(translation), [text_id]))
+        self.dic[key].append((self._normalize(translation), [text_id]))
 
     def get_entry(self, phrase):
-        key = self.normalize(phrase)
+        key = self._normalize(phrase)
         if not key in self.dic: return []
         return self.dic[key]
 
-    def normalize(self, phrase):
-        normalized = self.normalize_spaces(self.remove_symbols(phrase))
+    def _normalize(self, phrase):
+        normalized = self._normalize_spaces(self._remove_symbols(phrase))
         return normalized
 
-    def normalize_spaces(self, phrase):
+    def _normalize_spaces(self, phrase):
         symbols = re.compile(r' +')
         return symbols.sub(' ', phrase.strip())
 
-    def remove_symbols(self, phrase):
+    def _remove_symbols(self, phrase):
         symbols = re.compile(ur'[\'"(),.-/*!?―「」、。]')
         return symbols.sub('', phrase)
 
