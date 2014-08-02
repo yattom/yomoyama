@@ -1,16 +1,17 @@
 import os
-base_dir = os.path.dirname(__file__)
 
-# configuration for production on heroku
+# configuration for production on Docker
 
-BOOKS_DIR = base_dir + '/data/books'
-DATABASE_URI = 'sqlite:///' + base_dir + '/data/sqlite.db'
+DATA_DIR = os.environ['YOMOYAMA_DATA_DIR']
+BOOKS_DIR = DATA_DIR + '/books'
+DATABASE_URI = 'sqlite:///' + DATA_DIR + '/sqlite.db'
 SECRET_KEY = os.environ['SECRET_KEY']
+
 
 # configuration for GitHub-Flask
 GITHUB_CLIENT_ID = os.environ['CLIENT_ID']
 GITHUB_CLIENT_SECRET = os.environ['CLIENT_SECRET']
-GITHUB_CALLBACK_URL = 'http://lit-depths-4578.herokuapp.com/github-callback'
+GITHUB_CALLBACK_URL = 'http://yomoyama.yattom.jp/github-callback'
 
 # configure git command
 GIT_CMD = '/usr/bin/git'
