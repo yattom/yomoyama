@@ -22,15 +22,43 @@
       return this.glossary[key];
     };
 
+    Glossary.prototype.load = function() {
+      var self;
+      self = this;
+      return $.ajax({
+        url: "/books/" + ($('body').data('bookId')) + "/glossary",
+        type: 'GET',
+        success: function(resp) {
+          var key, w, words;
+          this.glossary = {};
+          for (key in resp.glossary) {
+            console.debug(key);
+            words = (function() {
+              var _i, _len, _ref, _results;
+              _ref = resp.glossary[key];
+              _results = [];
+              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                w = _ref[_i];
+                _results.push(w[0]);
+              }
+              return _results;
+            })();
+            self.update(key, words);
+          }
+          return $('div.paragraph').each(function() {
+            var pId;
+            pId = $(this).data('pId');
+            return apply_glossary_to_paragraph(pId);
+          });
+        }
+      });
+    };
+
     return Glossary;
 
   })();
 
   glossary = new Glossary;
-
-  glossary.update('team', ['チーム', 'スクラムチーム']);
-
-  glossary.update('Marcus', ['マーカス']);
 
   highlight_dict_entry = function() {
     var dictEntryId;
@@ -249,6 +277,7 @@
       pId = $(this).data('pId');
       return load_paragraph(pId);
     });
+    glossary.load();
     return setup_selected_event_handlers();
   });
 

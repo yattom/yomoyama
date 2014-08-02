@@ -12,9 +12,23 @@ class Glossary
       return []
     return @glossary[key]
 
+  load: ->
+    self = this
+    $.ajax
+      url: "/books/#{$('body').data('bookId')}/glossary"
+      type: 'GET'
+      success: (resp) ->
+        @glossary = {}
+        for key of resp.glossary
+          # omit text_id for now
+          console.debug(key)
+          words = (w[0] for w in resp.glossary[key])
+          self.update(key, words)
+        $('div.paragraph').each ->
+          pId = $(this).data('pId')
+          apply_glossary_to_paragraph(pId)
+
 glossary = new Glossary
-glossary.update('team', ['チーム', 'スクラムチーム'])
-glossary.update('Marcus', ['マーカス'])
 
 highlight_dict_entry = ->
   dictEntryId = $(this).data('dictEntryId')
@@ -179,5 +193,6 @@ $ ->
   $('div.paragraph').each ->
     pId = $(this).data('pId')
     load_paragraph(pId)
+  glossary.load()
   setup_selected_event_handlers()
 

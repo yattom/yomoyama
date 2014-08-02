@@ -39,6 +39,8 @@ class Glossary(object):
         symbols = re.compile(ur'[\'"(),.-/*!?―「」、。]')
         return symbols.sub('', phrase)
 
+    def get_all(self):
+        return self.dic
 
 class GlossaryOnFile(Glossary):
     def __init__(self, book_id, filename):

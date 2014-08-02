@@ -40,6 +40,25 @@ class GlossaryTest(unittest.TestCase):
         self.sut.add_entry('unit test', u'"単体"テスト', 't3')
         assert_that(self.sut.get_entry('unit test'), is_([(u'単体テスト', ['t1', 't2', 't3'])]))
 
+    def test_get_all(self):
+        '''
+        The chief purpose of this test is to protect
+        the exposed interface of get_all() from internal changes.
+        That is, the current implementation of get_all() is
+        just returning internal self.dic.
+        '''
+        self.sut.add_entry('test', u'テスト', 't1')
+        self.sut.add_entry('test', u'テスト', 't2')
+        self.sut.add_entry('test', u'試験', 't1')
+        self.sut.add_entry('unit test', u'単体テスト', 't1')
+        assert_that(self.sut.get_all(), is_({
+            'test': [
+                (u'テスト', ['t1', 't2']),
+                (u'試験', ['t1'])],
+            'unit test': [
+                (u'単体テスト', ['t1'])],
+            }))
+
 class GlossaryOnFileTest(unittest.TestCase):
     def setUp(self):
         self.tempdir = tempfile.mkdtemp()

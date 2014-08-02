@@ -142,3 +142,11 @@ def register_glossary(book_id, original):
     glossary.add_entry(original, translated, text_id)
     glossary.save()
     return "" # 200 ok
+
+@app.route('/books/<book_id>/glossary', methods=['GET'])
+def get_glossary(book_id):
+    glossary = GlossaryOnFile(book_id, os.path.join(Book.book_dir(book_id), 'glossary.rst'))
+    response = {
+        'glossary': glossary.get_all()
+    }
+    return jsonify(response)
