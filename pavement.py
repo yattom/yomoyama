@@ -40,6 +40,7 @@ Line 3.
         f.write(txt)
     sh('git add foo.txt', cwd=repo_dir)
     sh('git commit -m "initial"', cwd=repo_dir)
+    sh('git branch work_test', cwd=repo_dir)
     os.environ['ORIGINAL_REPO_URL'] = repo_dir
 
     os.mkdir(books_dir)
@@ -71,8 +72,15 @@ def install_coffee():
 
 @task
 def coffee():
-    sh('coffee --compile yomoyama/static/scripts/*.coffee')
+    sh('coffee --compile --map static/scripts/*.coffee', cwd='yomoyama')
 
 @task
 def coffeew():
-    sh('coffee --compile --watch yomoyama/static/scripts/*.coffee')
+    sh('coffee --compile --watch --map static/scripts/*.coffee', cwd='yomoyama')
+
+@task
+def devup():
+    'run supporting processes -- coffee, http server for test results, tail app.log'
+    sh('screen -t coffee paver coffeew')
+    sh('screen -t httpserver python -m SimpleHTTPServer')
+    sh('screen screen tail -f app.log')

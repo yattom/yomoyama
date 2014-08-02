@@ -10,6 +10,7 @@ from yomoyama import app
 
 from text import Text
 from models import Book, User, BookForUser, db_session
+from glossary import GlossaryOnFile
 
 @app.route('/about')
 def about():
@@ -31,7 +32,7 @@ def text(book_id, text_id):
     validate_text_id(book_dir, text_id)
     text = Text(book_dir + os.sep + text_id)
     total_words = sum([p.words for p in text.paragraphs])
-    return render_template('text.html', text_id=text_id, text=text, total_words=total_words)
+    return render_template('text.html', book_id=book_id, text_id=text_id, text=text, total_words=total_words)
 
 @app.route('/books/<book_id>/files/<path:text_id>/paragraphs/<p_id>', methods=['PUT'])
 def update_paragraph(book_id, text_id, p_id):
@@ -66,12 +67,48 @@ def get_paragraph(book_id, text_id, p_id):
     book_dir = Book.book_dir(book_id)
     validate_text_id(book_dir, text_id)
     text = Text(book_dir + os.sep + text_id)
-    for para in text.paragraphs:
-        if para.id == p_id:
-            break
+    if p_id == 'all':
+        paras = []
+        for para in text.paragraphs:
+            paras.append(return_paragraph(text, para))
+        return jsonify({'paragraphs': paras})
     else:
-        return 404
-    return jsonify({'original': para.original().value(), 'translated': para.translated().value(), 'id': para.id})
+        for para in text.paragraphs:
+            if para.id == p_id:
+                break
+        else:
+            return 404
+
+        resp = return_paragraph(text, para)
+        return jsonify(resp)
+
+def return_paragraph(text, para):
+    d = {'Scrum': u'スクラム', 'Rebecca': u'レベッカ'}
+    dictionary = []
+    for e, j in d.items():
+        try:
+            e_i = para.original().value().split().index(e)
+        except ValueError:
+            continue
+        try:
+            j_i = para.translated().value().index(j)
+        except ValueError:
+            j_i = -1
+        desc = u'%s: %s'%(e, j)
+        if j_i < 0:
+            dictionary.append([(e_i, e_i + 1), None, desc])
+        else:
+            dictionary.append([(e_i, e_i + 1), (j_i, j_i + len(j)), desc])
+
+    resp = {
+        'original': para.original().value().split(),
+        'translated': list(para.translated().value()),
+        'id': para.id,
+        'words_so_far': para.words_so_far,
+        'words': text.words,
+        'dictionary': dictionary,
+    }
+    return resp
 
 @app.route('/books/<book_id>')
 def book(book_id):
@@ -96,3 +133,20 @@ def validate_text_id(book_dir, text_id):
     path = book_dir + os.sep + text_id
     if not os.path.abspath(path).startswith(book_dir):
         raise ValueError('invalid text_id')
+
+@app.route('/books/<book_id>/glossary/<original>', methods=['PUT'])
+def register_glossary(book_id, original):
+    translated = request.form['translated']
+    text_id = request.form['text_id']
+    glossary = GlossaryOnFile(book_id, os.path.join(Book.book_dir(book_id), 'glossary.rst'))
+    glossary.add_entry(original, translated, text_id)
+    glossary.save()
+    return "" # 200 ok
+
+@app.route('/books/<book_id>/glossary', methods=['GET'])
+def get_glossary(book_id):
+    glossary = GlossaryOnFile(book_id, os.path.join(Book.book_dir(book_id), 'glossary.rst'))
+    response = {
+        'glossary': glossary.get_all()
+    }
+    return jsonify(response)
