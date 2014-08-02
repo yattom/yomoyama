@@ -80,7 +80,7 @@ def coffeew():
 
 @task
 def devup():
-    'run supporting processes -- coffee, http server for test results, tail app.log'
+    'run development supporting processes -- coffee, http server for test results, tail app.log'
     sh('screen -t coffee paver coffeew')
     sh('screen -t httpserver python -m SimpleHTTPServer')
     sh('screen screen tail -f app.log')
