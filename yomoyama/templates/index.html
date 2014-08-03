@@ -19,7 +19,7 @@
   <ul class='available_books'>
   {% for book in books %}
     <li>
-      <a href="{{ url_for("book", book_id=book.id) }}">{{book.title}}</a>
+      <a href="{{ url_for("book", book_id=book.id) }}" class="title">{{book.title}}</a>
       <a href="#" class='delete' data-book-id="{{book.id}}">delete</a>
     </li>
   {% endfor %}

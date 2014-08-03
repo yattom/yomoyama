@@ -3,8 +3,8 @@ import os.path
 import subprocess
 import yomoyama
 from flask import g
-from sqlalchemy import create_engine, Column, Integer, String, event
-from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy import create_engine, Column, Integer, String, event, ForeignKey
+from sqlalchemy.orm import scoped_session, sessionmaker, relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
 import shutil
 
@@ -62,6 +62,8 @@ class Book(Base):
     title = Column(String(200))
     repo_url = Column(String(200))
 
+    book_for_users = relationship('BookForUser', backref='book')
+
     def __init__(self, title, repo_url):
         self.title = title
         self.repo_url = repo_url
@@ -103,7 +105,7 @@ class BookForUser(Base):
     __tablename__ = 'books_for_users'
 
     id = Column(Integer, primary_key=True)
-    book_id = Column(Integer)
+    book_id = Column(Integer, ForeignKey('books.id'))
     user_id = Column(Integer)
     remote_branch = Column(String(200))
 

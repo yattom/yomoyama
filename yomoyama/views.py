@@ -22,9 +22,8 @@ def about():
 
 @app.route('/')
 def index():
-    books = db_session
-    books = Book.query.all()
-    return render_template('index.html', user=g.user, books=books)
+    my_books = [bu.book for bu in BookForUser.query.filter_by(user_id=g.user.id)]
+    return render_template('index.html', user=g.user, books=my_books)
 
 @app.route('/books/<book_id>/files/<path:text_id>')
 def text(book_id, text_id):

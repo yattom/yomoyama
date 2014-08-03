@@ -18,13 +18,14 @@ class DeleteBookTest extends GebReportingTest {
         page.registerBook('DeleteMe', System.getenv('ORIGINAL_REPO_URL'), 'work_test')
 
         to TopPage
-        assert availableBooks[0].displayed
+        assert availableBooks[1].displayed
+        assert availableBooks[1].text() == 'DeleteMe'
         report('2')
 
         deleteBooks[0].click()
         to TopPage
         report('3')
-        assert !availableBooks[0].displayed
+        assert !availableBooks[1].displayed
     }
 }
 
