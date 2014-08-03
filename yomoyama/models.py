@@ -6,6 +6,7 @@ from flask import g
 from sqlalchemy import create_engine, Column, Integer, String, event
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+import shutil
 
 from yomoyama import app
 
@@ -116,6 +117,11 @@ def receive_after_insert(mapper, connection, book_for_user):
     book = Book.query.filter_by(id=book_for_user.book_id).first()
     book.wdir.initialize_repository()
 
+@event.listens_for(BookForUser, 'before_delete')
+def receive_before_delete(mapper, connection, book_for_user):
+    book = Book.query.filter_by(id=book_for_user.book_id).first()
+    book.wdir.remove()
+
 
 class WorkingDirectory(object):
     def __init__(self, dir_path, repo_url, remote_branch, access_token):
@@ -159,5 +165,7 @@ class WorkingDirectory(object):
     def git(self, *args):
         subprocess.call([app.config['GIT_CMD']] + list(args), cwd=self.dir_path)
 
+    def remove(self):
+        shutil.rmtree(self.dir_path)
 
 init_db()

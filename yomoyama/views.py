@@ -128,6 +128,14 @@ def create_book():
     db_session.commit()
     return 'book: %s'%(book.id)
 
+@app.route('/books/<book_id>', methods=['DELETE'])
+def delete_book(book_id):
+    book_user=BookForUser.query.filter_by(user_id=g.user.id, book_id=book_id).first()
+    db_session.delete(book_user)
+    db_session.commit()
+    return '' # ok
+    # TODO: Book will never be deleted with current implementation
+
 def validate_text_id(book_dir, text_id):
     # TODO: guess there is a more robust way to do this
     path = book_dir + os.sep + text_id

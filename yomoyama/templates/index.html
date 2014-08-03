@@ -2,6 +2,9 @@
 <head>
 <title>yomoyama</title>
 <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles/styles.css') }}">
+<script type="text/javascript" src="{{ url_for('static', filename='scripts/jquery-2.1.0.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='scripts/jquery.flexibleArea.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='scripts/top.js') }}"></script>
 </head>
 <body>
 {% if user %}
@@ -17,6 +20,7 @@
   {% for book in books %}
     <li>
       <a href="{{ url_for("book", book_id=book.id) }}">{{book.title}}</a>
+      <a href="#" class='delete' data-book-id="{{book.id}}">delete</a>
     </li>
   {% endfor %}
   </ul>
