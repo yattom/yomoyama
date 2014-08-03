@@ -95,7 +95,7 @@ class Book(Base):
             return True
         book_dir = self.wdir.dir_path
         os.path.walk(book_dir, fn, None)
-        return file_names
+        return sorted(file_names)
 
 
 class BookForUser(Base):
