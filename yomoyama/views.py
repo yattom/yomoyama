@@ -125,7 +125,7 @@ def create_book():
     book_for_user = BookForUser(book.id, g.user.id, request.form['branch'])
     db_session.add(book_for_user)
     db_session.commit()
-    return 'book: %s'%(book.id)
+    return redirect(url_for('index'))
 
 @app.route('/books/<book_id>', methods=['DELETE'])
 def delete_book(book_id):

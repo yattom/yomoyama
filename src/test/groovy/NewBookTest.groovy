@@ -16,10 +16,8 @@ class NewBookTest extends GebReportingTest {
 
         at NewBookPage
         page.registerBook('New Title', System.getenv('ORIGINAL_REPO_URL'), 'work_test')
-        waitFor { $('body').text() == 'book: 1' }
-        report('2')
 
-        to TopPage
+        at TopPage
         assert availableBooks[0].text() == 'New Title'
         report('3')
 
