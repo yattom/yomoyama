@@ -27,7 +27,7 @@ def index():
 
 @app.route('/books/<book_id>/files/<path:text_id>')
 def text(book_id, text_id):
-    book_dir = Book.book_dir(book_id)
+    book_dir = Book.query.filter_by(id=book_id).first().wdir.dir_path
     validate_text_id(book_dir, text_id)
     text = Text(book_dir + os.sep + text_id)
     total_words = sum([p.words for p in text.paragraphs])
@@ -35,7 +35,7 @@ def text(book_id, text_id):
 
 @app.route('/books/<book_id>/files/<path:text_id>/paragraphs/<p_id>', methods=['PUT'])
 def update_paragraph(book_id, text_id, p_id):
-    book_dir = Book.book_dir(book_id)
+    book_dir = Book.query.filter_by(id=book_id).first().wdir.dir_path
     validate_text_id(book_dir, text_id)
     text = Text(book_dir + os.sep + text_id)
     for para in text.paragraphs:
@@ -63,7 +63,7 @@ def pull_book(book_id):
 
 @app.route('/books/<book_id>/files/<path:text_id>/paragraphs/<p_id>', methods=['GET'])
 def get_paragraph(book_id, text_id, p_id):
-    book_dir = Book.book_dir(book_id)
+    book_dir = Book.query.filter_by(id=book_id).first().wdir.dir_path
     validate_text_id(book_dir, text_id)
     text = Text(book_dir + os.sep + text_id)
     if p_id == 'all':
@@ -145,14 +145,14 @@ def validate_text_id(book_dir, text_id):
 def register_glossary(book_id, original):
     translated = request.form['translated']
     text_id = request.form['text_id']
-    glossary = GlossaryOnFile(book_id, os.path.join(Book.book_dir(book_id), 'glossary.rst'))
+    glossary = GlossaryOnFile(book_id, os.path.join(Book.query.filter_by(id=book_id).first().wdir.dir_path, 'glossary.rst'))
     glossary.add_entry(original, translated, text_id)
     glossary.save()
     return "" # 200 ok
 
 @app.route('/books/<book_id>/glossary', methods=['GET'])
 def get_glossary(book_id):
-    glossary = GlossaryOnFile(book_id, os.path.join(Book.book_dir(book_id), 'glossary.rst'))
+    glossary = GlossaryOnFile(book_id, os.path.join(Book.query.filter_by(id=book_id).first().wdir.dir_path, 'glossary.rst'))
     response = {
         'glossary': glossary.get_all()
     }

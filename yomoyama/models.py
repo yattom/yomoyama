@@ -71,7 +71,8 @@ class Book(Base):
     def get_wdir(self):
         book_for_user = BookForUser.query.filter_by(book_id=self.id, user_id=g.user.id).first()
         branch_name = book_for_user.remote_branch
-        return WorkingDirectory(Book.book_dir(self.id), self.repo_url, branch_name, yomoyama.github_access_token())
+        work_dir = app.config['BOOKS_DIR'] + os.sep + str(book_for_user.id)
+        return WorkingDirectory(work_dir, self.repo_url, branch_name, yomoyama.github_access_token())
     wdir = property(get_wdir)
 
     def commit_and_push(self, work_time_ms=0):
@@ -80,10 +81,6 @@ class Book(Base):
 
     def pull(self):
         self.wdir.pull()
-
-    @staticmethod
-    def book_dir(book_id):
-        return app.config['BOOKS_DIR'] + os.sep + str(book_id)
 
     def texts(self):
         file_names = []
@@ -96,7 +93,7 @@ class Book(Base):
                 path += f
                 file_names.append(path)
             return True
-        book_dir = Book.book_dir(self.id)
+        book_dir = self.wdir.dir_path
         os.path.walk(book_dir, fn, None)
         return file_names
 
