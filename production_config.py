@@ -11,7 +11,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # configuration for GitHub-Flask
 GITHUB_CLIENT_ID = os.environ['CLIENT_ID']
 GITHUB_CLIENT_SECRET = os.environ['CLIENT_SECRET']
-GITHUB_CALLBACK_URL = 'http://yomoyama.yattom.jp:45001/github-callback'
+GITHUB_CALLBACK_URL = 'http://yomoyama.yattom.jp:13001/github-callback'
 
 # configure git command
 GIT_CMD = '/usr/bin/git'
