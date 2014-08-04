@@ -22,7 +22,10 @@ def about():
 
 @app.route('/')
 def index():
-    my_books = [bu.book for bu in BookForUser.query.filter_by(user_id=g.user.id)]
+    if g.user:
+        my_books = [bu.book for bu in BookForUser.query.filter_by(user_id=g.user.id)]
+    else:
+        my_books = []
     return render_template('index.html', user=g.user, books=my_books)
 
 @app.route('/books/<book_id>/files/<path:text_id>')
