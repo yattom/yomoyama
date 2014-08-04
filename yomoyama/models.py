@@ -50,6 +50,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     username = Column(String(200))
+    email = Column(String(200))
     github_access_token = Column(Integer)
 
     def __init__(self, github_access_token):
@@ -151,7 +152,7 @@ class WorkingDirectory(object):
         comment = 'updated'
         if work_time_ms:
             comment += ' (%s)'%(readable_time(work_time_ms))
-        self.git('commit', '-m', comment)
+        self.git('commit', '-m', comment, "--author='%s <%s>'"%(g.user.username, g.user.email))
         self.git('push', url_with_auth, self.remote_branch)
 
     def pull(self):

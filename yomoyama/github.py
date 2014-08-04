@@ -36,7 +36,9 @@ def authorized(access_token):
     user = User.query.filter_by(github_access_token=access_token).first()
     if user is None:
         user = User(access_token)
-        user.username = github.get('user', params={'access_token':access_token})[u'name']
+        user_info = github.get('user', params={'access_token':access_token})
+        user.username = user_info[u'name']
+        user.email = user_info[u'email']
         db_session.add(user)
     user.github_access_token = access_token
     db_session.commit()
