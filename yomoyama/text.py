@@ -56,6 +56,7 @@ class Text(object):
 
     def parse_into_paragraphs(self, lines, blocks):
         paragraphs = []
+        paragraph_id = 0
         for start, end in blocks:
             first_translated = -1
             for idx in range(start, end + 1):
@@ -70,9 +71,10 @@ class Text(object):
             else:
                 original_span = (lines[start][0], lines[first_translated][0])
                 translated_span = (lines[first_translated][0], lines[end][1])
-            paragraph = Paragraph(self, original_span, translated_span)
+            paragraph = Paragraph(paragraph_id, self, original_span, translated_span)
             paragraph.words_so_far = paragraph.words + sum([p.words for p in paragraphs])
             paragraphs.append(paragraph)
+            paragraph_id += 1
         return paragraphs
 
     @staticmethod
@@ -124,7 +126,8 @@ class Paragraph(object):
                 s += '\n'
             return s
 
-    def __init__(self, text, original_span, translated_span):
+    def __init__(self, idx, text, original_span, translated_span):
+        self.idx = idx
         self.text = text
         self._original = self.text.fragment(*original_span)
         self._original.validator = Paragraph.OriginalPartValidator()
@@ -143,7 +146,7 @@ class Paragraph(object):
         return self._translated
 
     def get_id(self):
-        return self._original.id
+        return self.idx
     id = property(get_id)
 
 

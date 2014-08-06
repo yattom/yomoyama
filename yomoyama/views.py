@@ -42,7 +42,7 @@ def update_paragraph(book_id, text_id, p_id):
     validate_text_id(book_dir, text_id)
     text = Text(book_dir + os.sep + text_id)
     for para in text.paragraphs:
-        if para.id == p_id:
+        if str(para.id) == str(p_id): # FIXME: dangerous DUPLICATE
             break
     else:
         return 'ng'
@@ -76,7 +76,7 @@ def get_paragraph(book_id, text_id, p_id):
         return jsonify({'paragraphs': paras})
     else:
         for para in text.paragraphs:
-            if para.id == p_id:
+            if str(para.id) == str(p_id): # FIXME: dangerous DUPLICATE
                 break
         else:
             return 404

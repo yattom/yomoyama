@@ -237,7 +237,7 @@ class TextTest(unittest.TestCase):
         paragraph.translated().update(u'更新')
         assert_that(paragraph.id, is_(id_before))
         paragraph.original().update(u'Modified')
-        assert_that(paragraph.id, is_not(id_before))
+        assert_that(paragraph.id, is_(id_before))
 
 class TextWordCountTest(unittest.TestCase):
     def test_words(self):

@@ -78,7 +78,7 @@ class Book(Base):
 
     def commit_and_push(self, work_time_ms=0):
         self.wdir.add('*.yomo')
-        self.wdir.commit_and_push(work_time_ms)
+        self.wdir.commit_and_push(g.user, work_time_ms)
 
     def pull(self):
         self.wdir.pull()
@@ -143,7 +143,7 @@ class WorkingDirectory(object):
         self.git('checkout', '-b', self.remote_branch)
         self.git('pull', url_with_auth, self.remote_branch)
 
-    def commit_and_push(self, work_time_ms=0):
+    def commit_and_push(self, author, work_time_ms=0):
         if self.repo_url.startswith('https://'):
             url_with_auth = 'https://' + self.access_token + '@' + self.repo_url[8:]
         else:
@@ -152,7 +152,7 @@ class WorkingDirectory(object):
         comment = 'updated'
         if work_time_ms:
             comment += ' (%s)'%(readable_time(work_time_ms))
-        self.git('commit', '-m', comment, "--author='%s <%s>'"%(g.user.username, g.user.email))
+        self.git('commit', '-m', comment, "--author='%s <%s>'"%(author.username, author.email))
         self.git('push', url_with_auth, self.remote_branch)
 
     def pull(self):
