@@ -4,6 +4,15 @@
 </head>
 <body>
   <div>
+    <div>{{ book.title }}</div>
+    <div>
+      repository:
+      <span>{{ book.repository_url }}</span>
+    </div>
+    <div>
+      branch:
+      <span>{{ book_for_user.remote_branch }}</span>
+    </div>
     <a href='{{ url_for("pull_book", book_id=book.id) }}'>Click</a> to pull latest.
   </div>
   <ul class='files'>

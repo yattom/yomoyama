@@ -114,7 +114,9 @@ def return_paragraph(text, para):
 
 @app.route('/books/<book_id>')
 def book(book_id):
-    return render_template('books/show.html', book=Book.query.filter_by(id=book_id).first())
+    book = Book.query.filter_by(id=book_id).first()
+    book_for_user = BookForUser.query.filter_by(book_id=book_id, user_id=g.user.id).first()
+    return render_template('books/show.html', book=book, book_for_user=book_for_user)
 
 @app.route('/books/new')
 def new_book():
