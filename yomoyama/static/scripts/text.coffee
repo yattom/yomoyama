@@ -30,6 +30,28 @@ class Glossary
 
 glossary = new Glossary
 
+class Editor
+  constructor: (pid) ->
+    @paragraph_id = pid
+
+  saving: (start) ->
+    if start
+      $('div[data-p-id=' + @paragraph_id + '] .editor').addClass('saving')
+      $('div[data-p-id=' + @paragraph_id + '] .editor textarea').attr('disabled', true)
+    else
+      $('div[data-p-id=' + @paragraph_id + '] .editor textarea').attr('disabled', false)
+      $('div[data-p-id=' + @paragraph_id + '] .editor').removeClass('saving')
+
+  started_at: ->
+    return $('div[data-p-id=' + @paragraph_id + '] .editor').data('started_at')
+
+  hide: ->
+    $('div[data-p-id=' + @paragraph_id + '] .display').show()
+    $('div[data-p-id=' + @paragraph_id + '] .editor').hide()
+
+  text: ->
+    return $('div[data-p-id=' + @paragraph_id + '] .editor textarea').val()
+
 highlight_dict_entry = ->
   dictEntryId = $(this).data('dictEntryId')
   $('[data-dict-entry-id=' + dictEntryId + ']').addClass('dict-entry-highlight')
@@ -144,26 +166,28 @@ do_edit = ->
   $('div[data-p-id=' + pId + '] .editor').data('started_at', $.now())
 
 do_save = ->
-  pId = $(this).data('pId')
+  paragraph_id = $(this).data('pId')
+  editor = new Editor(paragraph_id)
 
-  started_at = $('div[data-p-id=' + pId + '] .editor').data('started_at')
+  editor.saving(true)
+  started_at = editor.started_at()
   finished_at = $.now()
-  txt = $('div[data-p-id=' + pId + '] .editor textarea').val()
   $.ajax
-    url: $(location).attr('href') + '/paragraphs/' + pId
+    url: $(location).attr('href') + '/paragraphs/' + paragraph_id
     type: 'PUT'
     data:
-      text: txt
+      text: editor.text()
       paragraph_started_at: started_at
       paragraph_finished_at: finished_at
       session_started_at: $('body').data('session_started_at')
       session_saved_at: finished_at
     success: (resp) ->
       if(!resp.is_updated)
-        $('div[data-p-id=' + resp.paragraph_id + '] .display').show()
-        $('div[data-p-id=' + resp.paragraph_id + '] .editor').hide()
+        editor.hide()
         return
       load_paragraph(resp.paragraph_id)
+    complete: (xhr, status) ->
+      editor.saving(false)
 
 setup_selected_event_handlers = ->
   $('body').mouseup ->

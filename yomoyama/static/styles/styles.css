@@ -37,6 +37,18 @@ textarea {
     width: 100%;
 }
 
+.editor.saving {
+    cursor: wait;
+}
+
+.editor.saving textarea {
+    cursor: wait;
+}
+
+.saving span.save {
+    color: gray;
+}
+
 span.in_dict {
     color: red;
 }
