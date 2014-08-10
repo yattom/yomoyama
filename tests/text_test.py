@@ -269,3 +269,9 @@ class TextIsTranslated(unittest.TestCase):
     def test_other_symbols(self):
         assert_that(text.Text.is_translated(u'+'), is_(False))
 
+    def test_dash(self):
+        assert_that(text.Text.is_translated(u'—'), is_(False))
+
+    def test_quotes(self):
+        assert_that(text.Text.is_translated(u'"\'“”’'), is_(False))
+
