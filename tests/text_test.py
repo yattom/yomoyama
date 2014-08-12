@@ -267,7 +267,7 @@ class TextIsTranslated(unittest.TestCase):
         assert_that(text.Text.is_translated(u'-----'), is_(False))
 
     def test_other_symbols(self):
-        assert_that(text.Text.is_translated(u'+'), is_(False))
+        assert_that(text.Text.is_translated(u'+*'), is_(False))
 
     def test_dash(self):
         assert_that(text.Text.is_translated(u'—'), is_(False))
