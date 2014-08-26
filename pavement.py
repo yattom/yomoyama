@@ -58,6 +58,11 @@ Line 3.
         sh('rm -rf %s'%(tempdir))
 
 @task
+@needs('test_unit', 'test_end2end')
+def test():
+    pass
+
+@task
 def install_coffee():
     os.environ['PREFIX'] = os.path.dirname(os.path.abspath(__file__))
     sh('wget http://nodejs.org/dist/v0.10.29/node-v0.10.29.tar.gz')
