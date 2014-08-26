@@ -4,7 +4,7 @@ import subprocess
 import yomoyama
 from flask import g
 from sqlalchemy import create_engine, Column, Integer, String, event, ForeignKey
-from sqlalchemy.orm import scoped_session, sessionmaker, relationship, backref
+from sqlalchemy.orm import scoped_session, sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
 import shutil
 
@@ -21,6 +21,7 @@ Base.query = db_session.query_property()
 
 def init_db():
     Base.metadata.create_all(bind=engine)
+
 
 def readable_time(ms):
     '''
@@ -45,6 +46,7 @@ def readable_time(ms):
     else:
         return '%d:%02d:%02d'%(sec / (60 * 60), (sec / 60) % 60, sec % 60)
 
+
 class User(Base):
     __tablename__ = 'users'
 
@@ -55,6 +57,7 @@ class User(Base):
 
     def __init__(self, github_access_token):
         self.github_access_token = github_access_token
+
 
 class Book(Base):
     __tablename__ = 'books'
@@ -85,6 +88,7 @@ class Book(Base):
 
     def texts(self):
         file_names = []
+
         def fn(arg, dirname, fnames):
             for f in fnames[:]:
                 if f.startswith('.'):
@@ -94,6 +98,7 @@ class Book(Base):
                 path += f
                 file_names.append(path)
             return True
+
         book_dir = self.wdir.dir_path
         os.path.walk(book_dir, fn, None)
         return sorted(file_names)
@@ -112,10 +117,12 @@ class BookForUser(Base):
         self.user_id = user_id
         self.remote_branch = remote_branch
 
+
 @event.listens_for(BookForUser, 'after_insert')
 def receive_after_insert(mapper, connection, book_for_user):
     book = Book.query.filter_by(id=book_for_user.book_id).first()
     book.wdir.initialize_repository()
+
 
 @event.listens_for(BookForUser, 'before_delete')
 def receive_before_delete(mapper, connection, book_for_user):
@@ -124,6 +131,7 @@ def receive_before_delete(mapper, connection, book_for_user):
 
 
 class WorkingDirectory(object):
+
     def __init__(self, dir_path, repo_url, remote_branch, access_token):
         self.dir_path = dir_path
         self.remote_branch = remote_branch
@@ -131,7 +139,7 @@ class WorkingDirectory(object):
         self.access_token = access_token
 
     def initialize_repository(self):
-        assert os.access(self.dir_path, os.F_OK) == False, 'book working directory already exists'
+        assert os.access(self.dir_path, os.F_OK) is False, 'book working directory already exists'
         if self.repo_url.startswith('https://'):
             url_with_auth = 'https://' + self.access_token + '@' + self.repo_url[8:]
         else:

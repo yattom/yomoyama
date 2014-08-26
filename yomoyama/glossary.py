@@ -1,18 +1,20 @@
-#encoding: utf-8
+# encoding: utf-8
 
 import re
-import io
-import os, os.path
+import os
+import os.path
 from codecs import open
 
+
 class Glossary(object):
+
     def __init__(self, book_id):
         self.book_id = book_id
         self.dic = {}
 
     def add_entry(self, original, translation, text_id):
         key = self._normalize(original)
-        if not key in self.dic:
+        if key not in self.dic:
             self.dic[key] = []
         normalized_translation = self._normalize(translation)
         for t, tid in self.dic[key]:
@@ -24,7 +26,7 @@ class Glossary(object):
 
     def get_entry(self, phrase):
         key = self._normalize(phrase)
-        if not key in self.dic: return []
+        if key not in self.dic: return []
         return self.dic[key]
 
     def _normalize(self, phrase):
@@ -42,7 +44,9 @@ class Glossary(object):
     def get_all(self):
         return self.dic
 
+
 class GlossaryOnFile(Glossary):
+
     def __init__(self, book_id, filename):
         super(GlossaryOnFile, self).__init__(book_id)
         self.filename = filename
@@ -76,10 +80,12 @@ class GlossaryOnFile(Glossary):
         key = ''
         desc = ''
         tids = []
+
         def close_entry():
             if key and desc:
                 for tid in tids:
                     self.add_entry(key, desc, tid)
+
         if format != 'rst':
             raise RuntimeError('not implemented')
         for line in (l.rstrip() for l in ins):

@@ -1,16 +1,16 @@
-#coding: utf8
+# encoding: utf8
 
 import os
 import os.path
 from flask import render_template, request, g
 from flask import redirect, url_for
 from flask import jsonify
-from flask import render_template_string
 from yomoyama import app
 
 from text import Text
-from models import Book, User, BookForUser, db_session
+from models import Book, BookForUser, db_session
 from glossary import GlossaryOnFile
+
 
 @app.route('/about')
 def about():
@@ -20,6 +20,7 @@ def about():
         lines.append('%s = %s'%(f, repr(eval(f))))
     return '<br>'.join(lines)
 
+
 @app.route('/')
 def index():
     if g.user:
@@ -27,6 +28,7 @@ def index():
     else:
         my_books = []
     return render_template('index.html', user=g.user, books=my_books)
+
 
 @app.route('/books/<book_id>/files/<path:text_id>')
 def text(book_id, text_id):
@@ -36,13 +38,14 @@ def text(book_id, text_id):
     total_words = sum([p.words for p in text.paragraphs])
     return render_template('text.html', book_id=book_id, text_id=text_id, text=text, total_words=total_words)
 
+
 @app.route('/books/<book_id>/files/<path:text_id>/paragraphs/<p_id>', methods=['PUT'])
 def update_paragraph(book_id, text_id, p_id):
     book_dir = Book.query.filter_by(id=book_id).first().wdir.dir_path
     validate_text_id(book_dir, text_id)
     text = Text(book_dir + os.sep + text_id)
     for para in text.paragraphs:
-        if str(para.id) == str(p_id): # FIXME: dangerous DUPLICATE
+        if str(para.id) == str(p_id):  # FIXME: dangerous DUPLICATE
             break
     else:
         return 'ng'
@@ -54,15 +57,17 @@ def update_paragraph(book_id, text_id, p_id):
     para.translated().update(request.form['text'])
     text.add_session(session_started_at, session_saved_at)
     text.save()
-    book=Book.query.filter_by(id=book_id).first()
+    book = Book.query.filter_by(id=book_id).first()
     book.commit_and_push(work_time_ms=work_time)
     return jsonify({'paragraph_id': para.id, 'is_updated': True})
 
+
 @app.route('/books/<book_id>/pull', methods=['GET'])
 def pull_book(book_id):
-    book=Book.query.filter_by(id=book_id).first()
+    book = Book.query.filter_by(id=book_id).first()
     book.pull()
     return redirect(url_for('book', book_id=book.id))
+
 
 @app.route('/books/<book_id>/files/<path:text_id>/paragraphs/<p_id>', methods=['GET'])
 def get_paragraph(book_id, text_id, p_id):
@@ -76,13 +81,14 @@ def get_paragraph(book_id, text_id, p_id):
         return jsonify({'paragraphs': paras})
     else:
         for para in text.paragraphs:
-            if str(para.id) == str(p_id): # FIXME: dangerous DUPLICATE
+            if str(para.id) == str(p_id):  # FIXME: dangerous DUPLICATE
                 break
         else:
             return 404
 
         resp = return_paragraph(text, para)
         return jsonify(resp)
+
 
 def return_paragraph(text, para):
     d = {'Scrum': u'スクラム', 'Rebecca': u'レベッカ'}
@@ -112,15 +118,18 @@ def return_paragraph(text, para):
     }
     return resp
 
+
 @app.route('/books/<book_id>')
 def book(book_id):
     book = Book.query.filter_by(id=book_id).first()
     book_for_user = BookForUser.query.filter_by(book_id=book_id, user_id=g.user.id).first()
     return render_template('books/show.html', book=book, book_for_user=book_for_user)
 
+
 @app.route('/books/new')
 def new_book():
     return render_template('books/new.html')
+
 
 @app.route('/books', methods=['POST'])
 def create_book():
@@ -132,19 +141,22 @@ def create_book():
     db_session.commit()
     return redirect(url_for('index'))
 
+
 @app.route('/books/<book_id>', methods=['DELETE'])
 def delete_book(book_id):
-    book_user=BookForUser.query.filter_by(user_id=g.user.id, book_id=book_id).first()
+    book_user = BookForUser.query.filter_by(user_id=g.user.id, book_id=book_id).first()
     db_session.delete(book_user)
     db_session.commit()
-    return '' # ok
+    return ''  # ok
     # TODO: Book will never be deleted with current implementation
+
 
 def validate_text_id(book_dir, text_id):
     # TODO: guess there is a more robust way to do this
     path = book_dir + os.sep + text_id
     if not os.path.abspath(path).startswith(book_dir):
         raise ValueError('invalid text_id')
+
 
 @app.route('/books/<book_id>/glossary/<original>', methods=['PUT'])
 def register_glossary(book_id, original):
@@ -153,7 +165,8 @@ def register_glossary(book_id, original):
     glossary = GlossaryOnFile(book_id, os.path.join(Book.query.filter_by(id=book_id).first().wdir.dir_path, 'glossary.rst'))
     glossary.add_entry(original, translated, text_id)
     glossary.save()
-    return "" # 200 ok
+    return ""  # 200 ok
+
 
 @app.route('/books/<book_id>/glossary', methods=['GET'])
 def get_glossary(book_id):

@@ -1,9 +1,9 @@
-import sys
 import os
-from paver.easy import *
+from paver.easy import task, needs, sh
 import subprocess
 
 import tempfile
+
 
 @task
 def run():
@@ -11,9 +11,11 @@ def run():
     os.environ['YOMOYAMA_CONFIG'] = '../local_config.py'
     sh('python yomoyama/run.py')
 
+
 @task
 def test_unit():
     sh('nosetests -s --with-doctest tests')
+
 
 @task
 def test_end2end():
@@ -48,7 +50,7 @@ Line 3.
     os.environ['DISPLAY'] = ':1'
     devnull = open('/dev/null', 'w')
     x = subprocess.Popen(['Xvfb', os.environ['DISPLAY']], stdout=devnull, stderr=devnull)
-    p = subprocess.Popen(['gunicorn','yomoyama.run:app', '-b', '%s:%s'%(target_ip, target_port), '--log-file', 'app.log', '--log-level', 'debug'])
+    p = subprocess.Popen(['gunicorn', 'yomoyama.run:app', '-b', '%s:%s'%(target_ip, target_port), '--log-file', 'app.log', '--log-level', 'debug'])
     try:
         sh('./gradlew cleanTest firefoxTest')
     finally:
@@ -57,10 +59,12 @@ Line 3.
         devnull.close()
         sh('rm -rf %s'%(tempdir))
 
+
 @task
 @needs('test_unit', 'test_end2end')
 def test():
     pass
+
 
 @task
 def install_coffee():
@@ -75,13 +79,16 @@ def install_coffee():
     sh('ln -s ../node_modules/coffee-script/bin/cake', cwd='bin')
     sh('ln -s ../node_modules/coffee-script/bin/coffee', cwd='bin')
 
+
 @task
 def coffee():
     sh('coffee --compile --map static/scripts/*.coffee', cwd='yomoyama')
 
+
 @task
 def coffeew():
     sh('coffee --compile --watch --map static/scripts/*.coffee', cwd='yomoyama')
+
 
 @task
 def devup():

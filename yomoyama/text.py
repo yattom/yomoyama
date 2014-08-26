@@ -3,11 +3,13 @@ from flask import json
 from codecs import open
 import re
 
+
 def count_word(s):
     return len([w for w in re.split('\W+', s) if w])
 
 
 class Text(object):
+
     def __init__(self, path):
         self.path = path
         self.fragments = []
@@ -108,18 +110,22 @@ class Text(object):
 
 
 class Paragraph(object):
+
     class OriginalPartValidator(object):
+
         def validate(self, s):
             if Text.is_translated(s):
                 raise ValueError('validation failed: original part should not contain Japanese')
 
     class TranslatedPartValidator(object):
+
         def validate(self, s):
             lines = [l.strip() for l in s.split('\n')]
             if not Text.is_translated(lines[0]):
                 raise ValueError('validation failed: the first line of a translated part should contain Japanese')
 
     class ParagraphNormalizer(object):
+
         def normalize(self, s):
             s = '\n'.join([l for l in s.split('\n') if len(l.strip()) > 0])
             if not s.endswith('\n'):
@@ -151,6 +157,7 @@ class Paragraph(object):
 
 
 class TextFragment(object):
+
     def __init__(self, text, head, tail):
         self.text = text
         self.head = head
