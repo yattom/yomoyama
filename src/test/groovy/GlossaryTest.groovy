@@ -38,6 +38,15 @@ class GlossaryTest extends GebReportingTest {
         at TextPage
         assert glossary_for_paragraph(0).text().contains('English : 翻訳')
         report()
+
+        selectEnText(0, 0, 1)
+        assert glossary_en.text() == 'English Paragraph'
+        selectJaText(0, 0, 2)
+        assert glossary_ja.text() == '翻訳文'
+        glossary_register.click()
+        assert glossary_for_paragraph(0).text().contains('English Paragraph : 翻訳文')
+        report()
+
     }
 }
 
