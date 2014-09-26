@@ -44,7 +44,16 @@ class GlossaryTest extends GebReportingTest {
         selectJaText(0, 0, 2)
         assert glossary_ja.text() == '翻訳文'
         glossary_register.click()
+
+        // TODO: just reload!
+        to TopPage
+        availableBooks[0].click()
+        waitFor { at FilesPage }
+        files[0].click()
+        at TextPage
+
         assert glossary_for_paragraph(0).text().contains('English Paragraph : 翻訳文')
+        assert glossary_for_paragraph(0).text().contains('English : 翻訳')
         report()
 
     }

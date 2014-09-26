@@ -12,6 +12,14 @@ class Glossary
       return []
     return @glossary[key]
 
+  entries_for_head: (head) ->
+    entries = []
+    for k, v of @glossary
+      words = k.split(' ')
+      if head == words[0]
+        entries.push(k.split(' '))
+    return entries
+
   load: ->
     self = this
     $.ajax
@@ -95,20 +103,33 @@ apply_glossary_to_paragraph = (pId) ->
   $('div[data-p-id=' + pId + '] div.glossary').html('')
   $('div[data-p-id=' + pId + '] div.editor_glossary').html('')
   $('div[data-p-id=' + pId + '] div.en span').each ->
-    word = $(this).text().trim()
-    entries = glossary.entry(word)
+    head = $(this)
+    entries = glossary.entries_for_head(head.text().trim())
     return if entries == undefined
-    if entries.length > 0 and found[word] == undefined
-      $("div[data-p-id=#{ pId }] div.glossary").append($("<div>#{ word } : #{entries}</div>"))
-      edit = $("<div>#{ word } </div>")
-      for e in entries
-        btn = $("<button>#{e}</button>")
-        btn.click ->
-          t = $('div[data-p-id=' + pId + '] div.ja textarea').text()
-          $('div[data-p-id=' + pId + '] div.ja textarea').text(t + e)
-        edit.append(btn)
-      $('div[data-p-id=' + pId + '] div.editor_glossary').append(edit)
-      found[word] = 1
+    for entry in entries
+      do (entry) ->
+        wId = head.data('wId')
+        words = ''
+        for i in [0...(entry.length)]
+          w = $('div[data-p-id=' + pId + '] div.en span[data-w-id=' + (wId + i) + ']').text().trim()
+#          console.debug('w:<' + w + '>, entry[' + i + ']: <' + entry[i] + '>')
+          if entry[i] != w
+            break
+          words += w + ' '
+#        console.debug('words: <' + words + '>')
+        words = words.trim()
+        if found[words] == undefined
+          translation = glossary.entry(words)
+#          console.debug('found! words:<' + words + '>, translation:<' + translation + '>')
+          $("div[data-p-id=#{ pId }] div.glossary").append($("<div>#{ words } : #{translation}</div>"))
+          edit = $("<div>#{ words } </div>")
+          btn = $("<button>#{translation}</button>")
+          btn.click ->
+            t = $('div[data-p-id=' + pId + '] div.ja textarea').text()
+            $('div[data-p-id=' + pId + '] div.ja textarea').text(t + translation)
+          edit.append(btn)
+          $('div[data-p-id=' + pId + '] div.editor_glossary').append(edit)
+          found[words] = 1
   if found.length == 0
     # prevent collapsing
     $('div[data-p-id=' + pId + '] div.glossary').html('&nbsp;')
