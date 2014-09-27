@@ -31,12 +31,7 @@ class GlossaryTest extends GebReportingTest {
         glossary_register.click()
         report()
 
-        // TODO: just reload!
-        to TopPage
-        availableBooks[0].click()
-        waitFor { at FilesPage }
-        files[0].click()
-        at TextPage
+        driver.navigate().refresh()
 
         assert glossary_for_paragraph(0).text().contains('English : 翻訳')
         report()
@@ -70,12 +65,7 @@ class GlossaryTest extends GebReportingTest {
         glossary_register.click()
         report()
 
-        // TODO: just reload!
-        to TopPage
-        bookByTitle('GlossaryTest2').click()
-        waitFor { at FilesPage }
-        files[0].click()
-        at TextPage
+        driver.navigate().refresh()
 
         assert glossary_for_paragraph(0).text().contains('English Paragraph : 翻訳文')
         assert glossary_for_paragraph(0).text().contains('English : 翻訳')
