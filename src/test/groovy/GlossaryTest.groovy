@@ -33,7 +33,7 @@ class GlossaryTest extends GebReportingTest {
 
         driver.navigate().refresh()
 
-        assert glossary_for_paragraph(0).text().contains('English : 翻訳')
+        assert glossary_for_paragraph[0].text().contains('English : 翻訳')
         report()
     }
 
@@ -67,8 +67,37 @@ class GlossaryTest extends GebReportingTest {
 
         driver.navigate().refresh()
 
-        assert glossary_for_paragraph(0).text().contains('English Paragraph : 翻訳文')
-        assert glossary_for_paragraph(0).text().contains('English : 翻訳')
+        assert glossary_for_paragraph[0].text().contains('English Paragraph : 翻訳文')
+        assert glossary_for_paragraph[0].text().contains('English : 翻訳')
+        report()
+
+    }
+
+    @Test
+    void NoDuplicateEntryInGlossaryForAParagraph() {
+        to TopPage
+        newBookLink.click()
+
+        at NewBookPage
+        page.registerBook('GlossaryTest3', System.getenv('ORIGINAL_REPO_URL'), 'work_test')
+
+        to TopPage
+        bookByTitle('GlossaryTest3').click()
+        waitFor { at FilesPage }
+        files[0].click()
+        at TextPage
+        editAndSave(1, "翻訳文です。2行目。3行目。")
+
+        selectEnText(1, 3, 0)
+        assert glossary_en.text() == 'Line'
+        selectJaText(1, 7, 1)
+        assert glossary_ja.text() == '行目'
+        report()
+        glossary_register.click()
+
+        driver.navigate().refresh()
+
+        assert glossary_for_paragraph[1].text() == 'Line : 行目'
         report()
 
     }
