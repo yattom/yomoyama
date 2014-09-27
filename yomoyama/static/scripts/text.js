@@ -110,6 +110,7 @@
     Paragraph: Paragraph = (function() {
       function Paragraph(pid) {
         this.paragraph_id = pid;
+        this.glossary_entries = [];
       }
 
       Paragraph.prototype.en_words = function(start, length) {
@@ -120,6 +121,25 @@
           words = words + ' ' + w;
         }
         return words.trim();
+      };
+
+      Paragraph.prototype.add_glossary_entry = function(words, translation) {
+        var btn, edit, pid;
+        if (this.glossary_entries.indexOf(words) !== -1) {
+          return;
+        }
+        this.glossary_entries.push(words);
+        pid = this.paragraph_id;
+        $("div[data-p-id=" + pid + "] div.glossary").append($("<div>" + words + " : " + translation + "</div>"));
+        edit = $("<div>" + words + " </div>");
+        btn = $("<button>" + translation + "</button>");
+        btn.click(function() {
+          var t;
+          t = $('div[data-p-id=' + pid + '] div.ja textarea').text();
+          return $('div[data-p-id=' + pid + '] div.ja textarea').text(t + translation);
+        });
+        edit.append(btn);
+        return $('div[data-p-id=' + pid + '] div.editor_glossary').append(edit);
       };
 
       return Paragraph;
@@ -204,43 +224,26 @@
   };
 
   apply_glossary_to_paragraph = function(pId) {
-    var found, paragraph;
-    found = {};
+    var paragraph;
     paragraph = new view.Paragraph(pId);
     $('div[data-p-id=' + pId + '] div.glossary').html('');
     $('div[data-p-id=' + pId + '] div.editor_glossary').html('');
-    $('div[data-p-id=' + pId + '] div.en span').each(function() {
-      var entries, entry, head, wId, _i, _len, _results;
-      head = $(this);
-      wId = head.data('wId');
-      entries = glossary.entries_for_head(head.text().trim());
+    return $('div[data-p-id=' + pId + '] div.en span').each(function() {
+      var entry, head_text, wId, _i, _len, _ref, _results;
+      head_text = $(this).text().trim();
+      wId = $(this).data('wId');
+      _ref = glossary.entries_for_head(head_text);
       _results = [];
-      for (_i = 0, _len = entries.length; _i < _len; _i++) {
-        entry = entries[_i];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        entry = _ref[_i];
         _results.push((function(entry) {
-          var btn, edit, translation, words;
+          var words;
           words = paragraph.en_words(wId, entry.length);
-          if (found[words] === void 0) {
-            translation = glossary.entry(words);
-            $("div[data-p-id=" + pId + "] div.glossary").append($("<div>" + words + " : " + translation + "</div>"));
-            edit = $("<div>" + words + " </div>");
-            btn = $("<button>" + translation + "</button>");
-            btn.click(function() {
-              var t;
-              t = $('div[data-p-id=' + pId + '] div.ja textarea').text();
-              return $('div[data-p-id=' + pId + '] div.ja textarea').text(t + translation);
-            });
-            edit.append(btn);
-            $('div[data-p-id=' + pId + '] div.editor_glossary').append(edit);
-            return found[words] = 1;
-          }
+          return paragraph.add_glossary_entry(words, glossary.entry(words));
         })(entry));
       }
       return _results;
     });
-    if (found.length === 0) {
-      return $('div[data-p-id=' + pId + '] div.glossary').html('&nbsp;');
-    }
   };
 
   render_paragraph = function(data) {
