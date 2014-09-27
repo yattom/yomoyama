@@ -60,6 +60,18 @@ class Editor
   text: ->
     return $('div[data-p-id=' + @paragraph_id + '] .editor textarea').val()
 
+view =
+  Paragraph: class Paragraph
+    constructor: (pid) ->
+      @paragraph_id = pid
+
+    en_words: (start, length) ->
+      words = ''
+      for i in [start...(start + length)]
+        w = $('div[data-p-id=' + @paragraph_id + '] div.en span:nth(' + i + ')').text().trim()
+        words = words + ' ' + w
+      return words.trim()
+
 highlight_dict_entry = ->
   dictEntryId = $(this).data('dictEntryId')
   $('[data-dict-entry-id=' + dictEntryId + ']').addClass('dict-entry-highlight')
@@ -100,27 +112,18 @@ build_ja_part = (pId, original, dictionary) ->
 
 apply_glossary_to_paragraph = (pId) ->
   found = {}
+  paragraph = new view.Paragraph(pId)
   $('div[data-p-id=' + pId + '] div.glossary').html('')
   $('div[data-p-id=' + pId + '] div.editor_glossary').html('')
   $('div[data-p-id=' + pId + '] div.en span').each ->
     head = $(this)
+    wId = head.data('wId')
     entries = glossary.entries_for_head(head.text().trim())
-    return if entries == undefined
     for entry in entries
       do (entry) ->
-        wId = head.data('wId')
-        words = ''
-        for i in [0...(entry.length)]
-          w = $('div[data-p-id=' + pId + '] div.en span[data-w-id=' + (wId + i) + ']').text().trim()
-#          console.debug('w:<' + w + '>, entry[' + i + ']: <' + entry[i] + '>')
-          if entry[i] != w
-            break
-          words += w + ' '
-#        console.debug('words: <' + words + '>')
-        words = words.trim()
+        words = paragraph.en_words(wId, entry.length)
         if found[words] == undefined
           translation = glossary.entry(words)
-#          console.debug('found! words:<' + words + '>, translation:<' + translation + '>')
           $("div[data-p-id=#{ pId }] div.glossary").append($("<div>#{ words } : #{translation}</div>"))
           edit = $("<div>#{ words } </div>")
           btn = $("<button>#{translation}</button>")
