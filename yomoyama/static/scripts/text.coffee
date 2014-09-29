@@ -8,9 +8,24 @@ class Glossary
     @glossary[key] = entries
 
   entry: (key) ->
+    key = @normalize(key)
     if @glossary[key] == undefined
       return []
     return @glossary[key]
+
+  entries_for_head: (head) ->
+    head = @normalize(head)
+    entries = []
+    for k, v of @glossary
+      words = k.split(' ')
+      if head == words[0]
+        entries.push(k.trim())
+    return entries
+
+  normalize: (phrase) ->
+    phrase = phrase.replace(/[-\'"(),.\/*!?―「」、。]/, '')
+    phrase = phrase.replace(/\s\s*/, ' ')
+    return phrase
 
   load: ->
     self = this
@@ -52,6 +67,33 @@ class Editor
   text: ->
     return $('div[data-p-id=' + @paragraph_id + '] .editor textarea').val()
 
+view =
+  Paragraph: class Paragraph
+    constructor: (pid) ->
+      @paragraph_id = pid
+      @glossary_entries = []
+
+    en_words: (start, length) ->
+      words = ''
+      for i in [start...(start + length)]
+        w = $('div[data-p-id=' + @paragraph_id + '] div.en span:nth(' + i + ')').text().trim()
+        words = words + ' ' + w
+      return words.trim()
+
+    add_glossary_entry: (words, translation) ->
+      if @glossary_entries.indexOf(glossary.normalize(words)) != -1
+        return
+      @glossary_entries.push(glossary.normalize(words))
+      pid = @paragraph_id
+      $("div[data-p-id=#{ pid }] div.glossary").append($("<div>#{ words } : #{translation}</div>"))
+      edit = $("<div>#{ words } </div>")
+      btn = $("<button>#{translation}</button>")
+      btn.click ->
+        t = $('div[data-p-id=' + pid + '] div.ja textarea').text()
+        $('div[data-p-id=' + pid + '] div.ja textarea').text(t + translation)
+      edit.append(btn)
+      $('div[data-p-id=' + pid + '] div.editor_glossary').append(edit)
+
 highlight_dict_entry = ->
   dictEntryId = $(this).data('dictEntryId')
   $('[data-dict-entry-id=' + dictEntryId + ']').addClass('dict-entry-highlight')
@@ -91,28 +133,17 @@ build_ja_part = (pId, original, dictionary) ->
   div_ja.append w for w in words
 
 apply_glossary_to_paragraph = (pId) ->
-  found = {}
+  paragraph = new view.Paragraph(pId)
   $('div[data-p-id=' + pId + '] div.glossary').html('')
   $('div[data-p-id=' + pId + '] div.editor_glossary').html('')
   $('div[data-p-id=' + pId + '] div.en span').each ->
-    word = $(this).text().trim()
-    entries = glossary.entry(word)
-    return if entries == undefined
-    if entries.length > 0 and found[word] == undefined
-      $("div[data-p-id=#{ pId }] div.glossary").append($("<div>#{ word } : #{entries}</div>"))
-      edit = $("<div>#{ word } </div>")
-      for e in entries
-        btn = $("<button>#{e}</button>")
-        btn.click ->
-          t = $('div[data-p-id=' + pId + '] div.ja textarea').text()
-          $('div[data-p-id=' + pId + '] div.ja textarea').text(t + e)
-        edit.append(btn)
-      $('div[data-p-id=' + pId + '] div.editor_glossary').append(edit)
-      found[word] = 1
-  if found.length == 0
-    # prevent collapsing
-    $('div[data-p-id=' + pId + '] div.glossary').html('&nbsp;')
-
+    head_text = $(this).text().trim()
+    wId = $(this).data('wId')
+    for entry in glossary.entries_for_head(head_text)
+      do (entry) ->
+        words = paragraph.en_words(wId, entry.split(' ').length)
+        if words == entry
+          paragraph.add_glossary_entry(words, glossary.entry(words))
 
 render_paragraph = (data) ->
   $('div[data-p-id=' + data.id + ']').html("""

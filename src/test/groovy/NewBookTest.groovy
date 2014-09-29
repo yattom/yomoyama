@@ -18,7 +18,7 @@ class NewBookTest extends GebReportingTest {
         page.registerBook('New Title', System.getenv('ORIGINAL_REPO_URL'), 'work_test')
 
         at TopPage
-        assert availableBooks[0].text() == 'New Title'
+        assert bookByTitle('New Title').displayed
         report('3')
 
         availableBooks[0].click()
