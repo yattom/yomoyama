@@ -16,6 +16,7 @@
     };
 
     Glossary.prototype.entry = function(key) {
+      key = this.normalize(key);
       if (this.glossary[key] === void 0) {
         return [];
       }
@@ -24,6 +25,7 @@
 
     Glossary.prototype.entries_for_head = function(head) {
       var entries, k, v, words, _ref;
+      head = this.normalize(head);
       entries = [];
       _ref = this.glossary;
       for (k in _ref) {
@@ -34,6 +36,12 @@
         }
       }
       return entries;
+    };
+
+    Glossary.prototype.normalize = function(phrase) {
+      phrase = phrase.replace(/[-\'"(),.\/*!?―「」、。]/, '');
+      phrase = phrase.replace(/\s\s*/, ' ');
+      return phrase;
     };
 
     Glossary.prototype.load = function() {
@@ -125,10 +133,10 @@
 
       Paragraph.prototype.add_glossary_entry = function(words, translation) {
         var btn, edit, pid;
-        if (this.glossary_entries.indexOf(words) !== -1) {
+        if (this.glossary_entries.indexOf(glossary.normalize(words)) !== -1) {
           return;
         }
-        this.glossary_entries.push(words);
+        this.glossary_entries.push(glossary.normalize(words));
         pid = this.paragraph_id;
         $("div[data-p-id=" + pid + "] div.glossary").append($("<div>" + words + " : " + translation + "</div>"));
         edit = $("<div>" + words + " </div>");

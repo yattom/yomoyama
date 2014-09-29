@@ -8,17 +8,24 @@ class Glossary
     @glossary[key] = entries
 
   entry: (key) ->
+    key = @normalize(key)
     if @glossary[key] == undefined
       return []
     return @glossary[key]
 
   entries_for_head: (head) ->
+    head = @normalize(head)
     entries = []
     for k, v of @glossary
       words = k.split(' ')
       if head == words[0]
         entries.push(k.split(' '))
     return entries
+
+  normalize: (phrase) ->
+    phrase = phrase.replace(/[-\'"(),.\/*!?―「」、。]/, '')
+    phrase = phrase.replace(/\s\s*/, ' ')
+    return phrase
 
   load: ->
     self = this
@@ -74,9 +81,9 @@ view =
       return words.trim()
 
     add_glossary_entry: (words, translation) ->
-      if @glossary_entries.indexOf(words) != -1
+      if @glossary_entries.indexOf(glossary.normalize(words)) != -1
         return
-      @glossary_entries.push(words)
+      @glossary_entries.push(glossary.normalize(words))
       pid = @paragraph_id
       $("div[data-p-id=#{ pid }] div.glossary").append($("<div>#{ words } : #{translation}</div>"))
       edit = $("<div>#{ words } </div>")
