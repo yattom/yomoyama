@@ -19,7 +19,7 @@ class Glossary
     for k, v of @glossary
       words = k.split(' ')
       if head == words[0]
-        entries.push(k.split(' '))
+        entries.push(k.trim())
     return entries
 
   normalize: (phrase) ->
@@ -141,8 +141,9 @@ apply_glossary_to_paragraph = (pId) ->
     wId = $(this).data('wId')
     for entry in glossary.entries_for_head(head_text)
       do (entry) ->
-        words = paragraph.en_words(wId, entry.length)
-        paragraph.add_glossary_entry(words, glossary.entry(words))
+        words = paragraph.en_words(wId, entry.split(' ').length)
+        if words == entry
+          paragraph.add_glossary_entry(words, glossary.entry(words))
 
 render_paragraph = (data) ->
   $('div[data-p-id=' + data.id + ']').html("""

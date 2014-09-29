@@ -32,7 +32,7 @@
         v = _ref[k];
         words = k.split(' ');
         if (head === words[0]) {
-          entries.push(k.split(' '));
+          entries.push(k.trim());
         }
       }
       return entries;
@@ -246,8 +246,10 @@
         entry = _ref[_i];
         _results.push((function(entry) {
           var words;
-          words = paragraph.en_words(wId, entry.length);
-          return paragraph.add_glossary_entry(words, glossary.entry(words));
+          words = paragraph.en_words(wId, entry.split(' ').length);
+          if (words === entry) {
+            return paragraph.add_glossary_entry(words, glossary.entry(words));
+          }
         })(entry));
       }
       return _results;
