@@ -1,13 +1,13 @@
 div.paragraph {
 	display: block;
 	clear: both;
-	width: 800px;
+	width: 1000px;
 	padding: 16px;
 }
 
 div.glossary {
 	float: right;
-	width: 15%;
+	width: 25%;
 	margin: 1em;
 }
 
@@ -15,7 +15,7 @@ div.en {
 	font-family: 'Lucida Grande', Meiryo, sans-serif;
 	font-size: 10.5pt;
 	margin: 1em;
-	width: 35%;
+	width: 30%;
 	color: #000080;
 	float: right;
 }
@@ -23,7 +23,7 @@ div.en {
 div.ja {
 	font-family: 'Lucida Grande', Meiryo, sans-serif;
 	font-size: 10.5pt;
-	width: 35%;
+	width: 30%;
 	color: black;
 	margin: 1em;
 	float: right;
