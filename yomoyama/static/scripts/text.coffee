@@ -166,13 +166,6 @@ render_paragraph = (data) ->
   build_en_part data.id, data.original, data.dictionary
   build_ja_part data.id, data.translated, data.dictionary
   apply_glossary_to_paragraph data.id
-#  for dict_entry in data.dictionary
-#    en = dict_entry[0]
-#    ja = dict_entry[1]
-#    for i in [en[0]...en[1]]
-#      $('div[data-p-id=' + data.id + '] .en span[data-w-id = ' + i + ']').css('color', 'red')
-#    for i in [ja[0]...ja[1]]
-#      $('div[data-p-id=' + data.id + '] .ja span[data-w-id = ' + i + ']').css('color', 'green')
 
   $('div[data-p-id=' + data.id + '] .display').show()
   $('div[data-p-id=' + data.id + '] .editor').hide()
