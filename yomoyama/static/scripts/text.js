@@ -51,7 +51,7 @@
         url: "/books/" + ($('body').data('bookId')) + "/glossary",
         type: 'GET',
         success: function(resp) {
-          var key, w, words;
+          var glossary_applied_pids, key, w, words;
           this.glossary = {};
           for (key in resp.glossary) {
             console.debug(key);
@@ -67,11 +67,19 @@
             })();
             self.update(key, words);
           }
-          return $('div.paragraph').each(function() {
-            var pId;
-            pId = $(this).data('pId');
-            return apply_glossary_to_paragraph(pId);
-          });
+          glossary_applied_pids = {};
+          return setInterval(function() {
+            return $('div.paragraph').each(function() {
+              var pId;
+              pId = $(this).data('pId');
+              if (glossary_applied_pids[pId] === void 0) {
+                if ($(this).visible()) {
+                  apply_glossary_to_paragraph(pId);
+                  return glossary_applied_pids[pId] = 1;
+                }
+              }
+            });
+          }, 800);
         }
       });
     };

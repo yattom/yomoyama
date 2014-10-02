@@ -39,9 +39,18 @@ class Glossary
           console.debug(key)
           words = (w[0] for w in resp.glossary[key])
           self.update(key, words)
-        $('div.paragraph').each ->
-          pId = $(this).data('pId')
-          apply_glossary_to_paragraph(pId)
+
+        # start to let paragraphs apply glossary when visible
+        glossary_applied_pids = {}
+        setInterval ->
+          $('div.paragraph').each ->
+            pId = $(this).data('pId')
+            if glossary_applied_pids[pId] == undefined
+              if $(this).visible()
+                apply_glossary_to_paragraph(pId)
+                glossary_applied_pids[pId] = 1
+        , 800
+
 
 glossary = new Glossary
 
@@ -243,4 +252,3 @@ $ ->
     load_paragraph(pId)
   glossary.load()
   setup_selected_event_handlers()
-
