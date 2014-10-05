@@ -118,24 +118,24 @@ words_to_spans = (pId, original) ->
     words.push(word)
   return words
 
-build_en_part = (pId, original, dictionary) ->
+build_en_part = (pId, original, translated_pairs) ->
   words = words_to_spans(pId, (w + ' ' for w in original))
-  for dic, i in dictionary
+  for dic, i in translated_pairs
     for idx in [dic[0][0]...dic[0][1]]
-      words[idx].addClass('in_dict')
+      words[idx].addClass('has_pair')
       words[idx].attr('data-dict-entry-id', pId + '#' + i)
       if dic[1] != null
         words[idx].hover(highlight_dict_entry, unhighlight_dict_entry)
   div_en = $('div[data-p-id=' + pId + '] div.en span.word-count')
   div_en.before w for w in words
 
-build_ja_part = (pId, original, dictionary) ->
+build_ja_part = (pId, original, translated_pairs) ->
   words = words_to_spans(pId, original)
-  for dic, i in dictionary
+  for dic, i in translated_pairs
     if dic[1] == null
       continue
     for idx in [dic[1][0]...dic[1][1]]
-      words[idx].addClass('in_dict')
+      words[idx].addClass('has_pair')
       words[idx].attr('data-dict-entry-id', pId + '#' + i)
       words[idx].hover(highlight_dict_entry, unhighlight_dict_entry)
   div_ja = $('div[data-p-id=' + pId + '] div.ja div.display p')
@@ -172,8 +172,8 @@ render_paragraph = (data) ->
   </div>
 </div>
 """)
-  build_en_part data.id, data.original, data.dictionary
-  build_ja_part data.id, data.translated, data.dictionary
+  build_en_part data.id, data.original, data.translated_pairs
+  build_ja_part data.id, data.translated, data.translated_pairs
   apply_glossary_to_paragraph data.id
 
   $('div[data-p-id=' + data.id + '] .display').show()

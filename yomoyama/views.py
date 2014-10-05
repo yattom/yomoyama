@@ -91,8 +91,8 @@ def get_paragraph(book_id, text_id, p_id):
 
 
 def return_paragraph(text, para):
-    d = {'Scrum': u'スクラム', 'Rebecca': u'レベッカ'}
-    dictionary = []
+    d = {'Scrum': u'スクラム', 'English': u'英語'}
+    translated_pairs = []
     for e, j in d.items():
         try:
             e_i = para.original().value().split().index(e)
@@ -104,9 +104,9 @@ def return_paragraph(text, para):
             j_i = -1
         desc = u'%s: %s'%(e, j)
         if j_i < 0:
-            dictionary.append([(e_i, e_i + 1), None, desc])
+            translated_pairs.append([(e_i, e_i + 1), None, desc])
         else:
-            dictionary.append([(e_i, e_i + 1), (j_i, j_i + len(j)), desc])
+            translated_pairs.append([(e_i, e_i + 1), (j_i, j_i + len(j)), desc])
 
     resp = {
         'original': para.original().value().split(),
@@ -114,7 +114,7 @@ def return_paragraph(text, para):
         'id': para.id,
         'words_so_far': para.words_so_far,
         'words': text.words,
-        'dictionary': dictionary,
+        'translated_pairs': translated_pairs,
     }
     return resp
 

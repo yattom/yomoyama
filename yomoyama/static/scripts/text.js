@@ -186,7 +186,7 @@
     return words;
   };
 
-  build_en_part = function(pId, original, dictionary) {
+  build_en_part = function(pId, original, translated_pairs) {
     var dic, div_en, i, idx, w, words, _i, _j, _k, _len, _len1, _ref, _ref1, _results;
     words = words_to_spans(pId, (function() {
       var _i, _len, _results;
@@ -197,10 +197,10 @@
       }
       return _results;
     })());
-    for (i = _i = 0, _len = dictionary.length; _i < _len; i = ++_i) {
-      dic = dictionary[i];
+    for (i = _i = 0, _len = translated_pairs.length; _i < _len; i = ++_i) {
+      dic = translated_pairs[i];
       for (idx = _j = _ref = dic[0][0], _ref1 = dic[0][1]; _ref <= _ref1 ? _j < _ref1 : _j > _ref1; idx = _ref <= _ref1 ? ++_j : --_j) {
-        words[idx].addClass('in_dict');
+        words[idx].addClass('has_pair');
         words[idx].attr('data-dict-entry-id', pId + '#' + i);
         if (dic[1] !== null) {
           words[idx].hover(highlight_dict_entry, unhighlight_dict_entry);
@@ -216,16 +216,16 @@
     return _results;
   };
 
-  build_ja_part = function(pId, original, dictionary) {
+  build_ja_part = function(pId, original, translated_pairs) {
     var dic, div_ja, i, idx, w, words, _i, _j, _k, _len, _len1, _ref, _ref1, _results;
     words = words_to_spans(pId, original);
-    for (i = _i = 0, _len = dictionary.length; _i < _len; i = ++_i) {
-      dic = dictionary[i];
+    for (i = _i = 0, _len = translated_pairs.length; _i < _len; i = ++_i) {
+      dic = translated_pairs[i];
       if (dic[1] === null) {
         continue;
       }
       for (idx = _j = _ref = dic[1][0], _ref1 = dic[1][1]; _ref <= _ref1 ? _j < _ref1 : _j > _ref1; idx = _ref <= _ref1 ? ++_j : --_j) {
-        words[idx].addClass('in_dict');
+        words[idx].addClass('has_pair');
         words[idx].attr('data-dict-entry-id', pId + '#' + i);
         words[idx].hover(highlight_dict_entry, unhighlight_dict_entry);
       }
@@ -266,8 +266,8 @@
 
   render_paragraph = function(data) {
     $('div[data-p-id=' + data.id + ']').html("<div class=\"glossary\">&nbsp;</div>\n<div class=\"en\">\n  <span class='word-count'>(" + data.words_so_far + " / " + data.words + ")</span>\n</div>\n<div class=\"ja\">\n  <div class=\"display\">\n    <p></p>\n    <span class=\"edit\" data-p-id=\"" + data.id + "\">Edit</span>\n  </div>\n  <div class=\"editor\">\n    <textarea>" + (data.translated.join('')) + "</textarea>\n    <span class=\"save\" data-p-id=\"" + data.id + "\">Save</span>\n    <div class=\"editor_glossary\"></div>\n  </div>\n</div>");
-    build_en_part(data.id, data.original, data.dictionary);
-    build_ja_part(data.id, data.translated, data.dictionary);
+    build_en_part(data.id, data.original, data.translated_pairs);
+    build_ja_part(data.id, data.translated, data.translated_pairs);
     apply_glossary_to_paragraph(data.id);
     $('div[data-p-id=' + data.id + '] .display').show();
     $('div[data-p-id=' + data.id + '] .editor').hide();
