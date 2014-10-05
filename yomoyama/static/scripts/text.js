@@ -73,7 +73,7 @@
               var pId;
               pId = $(this).data('pId');
               if (glossary_applied_pids[pId] === void 0) {
-                if ($(this).visible()) {
+                if ($(this).visible(true)) {
                   apply_glossary_to_paragraph(pId);
                   return glossary_applied_pids[pId] = 1;
                 }

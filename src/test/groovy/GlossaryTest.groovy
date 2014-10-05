@@ -7,7 +7,6 @@ import org.junit.runners.JUnit4
 
 @RunWith(JUnit4)
 class GlossaryTest extends GebReportingTest {
-
     @Test
     void RegisterGlossaryEntryAndShow() {
         to TopPage
@@ -33,7 +32,7 @@ class GlossaryTest extends GebReportingTest {
 
         driver.navigate().refresh()
 
-        assert glossary_for_paragraph[0].text().contains('English : 翻訳')
+        waitFor { glossary_for_paragraph[0].text().contains('English : 翻訳') }
         report()
     }
 
@@ -67,8 +66,8 @@ class GlossaryTest extends GebReportingTest {
 
         driver.navigate().refresh()
 
-        assert glossary_for_paragraph[0].text().contains('English Paragraph : 翻訳文')
-        assert glossary_for_paragraph[0].text().contains('English : 翻訳')
+        waitFor { glossary_for_paragraph[0].text().contains('English Paragraph : 翻訳文') }
+        waitFor { glossary_for_paragraph[0].text().contains('English : 翻訳') }
         report()
 
     }
@@ -97,7 +96,7 @@ class GlossaryTest extends GebReportingTest {
 
         driver.navigate().refresh()
 
-        assert glossary_for_paragraph[1].text() == 'Line : 行目'
+        waitFor { glossary_for_paragraph[1].text() == 'Line : 行目' }
         report()
 
     }

@@ -46,7 +46,7 @@ class Glossary
           $('div.paragraph').each ->
             pId = $(this).data('pId')
             if glossary_applied_pids[pId] == undefined
-              if $(this).visible()
+              if $(this).visible(true)
                 apply_glossary_to_paragraph(pId)
                 glossary_applied_pids[pId] = 1
         , 800
