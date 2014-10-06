@@ -119,40 +119,62 @@ words_to_spans = (pId, original) ->
   return words
 
 build_en_part = (pId, original, translated_pairs) ->
-  words = words_to_spans(pId, (w + ' ' for w in original))
-  for dic, i in translated_pairs
-    for idx in [dic[0][0]...dic[0][1]]
-      words[idx].addClass('has_pair')
-      words[idx].attr('data-dict-entry-id', pId + '#' + i)
-      if dic[1] != null
-        words[idx].hover(highlight_dict_entry, unhighlight_dict_entry)
-  div_en = $('div[data-p-id=' + pId + '] div.en span.word-count')
-  div_en.before w for w in words
+  ranges = []
+  for pair, i in translated_pairs
+    en_range = [pair[0][0], pair[0][1]]
+    ranges.push([en_range, pId + '#' + i])
+  words = original.slice(0)
+  for range in ranges
+    # it's assumed that no single element appears in at most once in ranges
+    start = range[0][0]
+    end = range[0][1]
+    words[start] = '<span class="has_pair" data-dict-entry-id="' + range[1] + '">' + words[start]
+    words[end] =  '</span>' + words[end]
+  div_en = $('div[data-p-id=' + pId + '] div.en')
+  div_en.prepend('<p>' + words.join(' ') + '</p>')
+  $('div[data-p-id=' + pId + '] span.has_pair').hover(highlight_dict_entry, unhighlight_dict_entry)
 
 build_ja_part = (pId, original, translated_pairs) ->
-  words = words_to_spans(pId, original)
-  for dic, i in translated_pairs
-    if dic[1] == null
+  ranges = []
+  for pair, i in translated_pairs
+    if pair[1] == null
       continue
-    for idx in [dic[1][0]...dic[1][1]]
-      words[idx].addClass('has_pair')
-      words[idx].attr('data-dict-entry-id', pId + '#' + i)
-      words[idx].hover(highlight_dict_entry, unhighlight_dict_entry)
-  div_ja = $('div[data-p-id=' + pId + '] div.ja div.display p')
-  div_ja.append w for w in words
+    en_range = [pair[1][0], pair[1][1]]
+    ranges.push([en_range, pId + '#' + i])
+  words = original.slice(0)
+  for range in ranges
+    # it's assumed that no single element appears in at most once in ranges
+    start = range[0][0]
+    end = range[0][1]
+    words[start] = '<span class="has_pair" data-dict-entry-id="' + range[1] + '">' + words[start]
+    words[end] =  '</span>' + words[end]
+  div_en = $('div[data-p-id=' + pId + '] div.ja div.display')
+  div_en.prepend('<p>' + words.join('') + '</p>')
+  $('div[data-p-id=' + pId + '] span.has_pair').hover(highlight_dict_entry, unhighlight_dict_entry)
+
+#  words = words_to_spans(pId, original)
+#  for dic, i in translated_pairs
+#    if dic[1] == null
+#      continue
+#    for idx in [dic[1][0]...dic[1][1]]
+#      words[idx].addClass('has_pair')
+#      words[idx].attr('data-dict-entry-id', pId + '#' + i)
+#      words[idx].hover(highlight_dict_entry, unhighlight_dict_entry)
+#  div_ja = $('div[data-p-id=' + pId + '] div.ja div.display p')
+#  div_ja.append w for w in words
 
 apply_glossary_to_paragraph = (pId) ->
   paragraph = new view.Paragraph(pId)
   $('div[data-p-id=' + pId + '] div.glossary').html('')
   $('div[data-p-id=' + pId + '] div.editor_glossary').html('')
-  $('div[data-p-id=' + pId + '] div.en span').each ->
-    head_text = $(this).text().trim()
-    wId = $(this).data('wId')
-    for entry in glossary.entries_for_head(head_text)
+  words = $('div[data-p-id=' + pId + '] div.en p').text().split(' ')
+  for word, i in words
+    word = word.trim()
+    for entry in glossary.entries_for_head(word)
       do (entry) ->
-        words = paragraph.en_words(wId, entry.split(' ').length)
-        if words == entry
-          paragraph.add_glossary_entry(words, glossary.entry(words))
+        ws = words.slice(i, i + entry.split(' ').length).join(' ')
+        if ws == entry
+          paragraph.add_glossary_entry(ws, glossary.entry(ws))
 
 render_paragraph = (data) ->
   $('div[data-p-id=' + data.id + ']').html("""

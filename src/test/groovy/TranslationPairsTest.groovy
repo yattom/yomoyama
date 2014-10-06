@@ -25,8 +25,7 @@ class TranslationPairsTest extends GebReportingTest {
         driver.navigate().refresh()
 
         assert original[0].find('span.has_pair').text() == 'English'
-        assert translated[0].find('span.has_pair')[0].text() == '英'
-        assert translated[0].find('span.has_pair')[1].text() == '語'
+        assert translated[0].find('span.has_pair').text() == '英語'
         report()
     }
 }

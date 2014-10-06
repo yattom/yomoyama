@@ -187,81 +187,78 @@
   };
 
   build_en_part = function(pId, original, translated_pairs) {
-    var dic, div_en, i, idx, w, words, _i, _j, _k, _len, _len1, _ref, _ref1, _results;
-    words = words_to_spans(pId, (function() {
-      var _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = original.length; _i < _len; _i++) {
-        w = original[_i];
-        _results.push(w + ' ');
-      }
-      return _results;
-    })());
+    var div_en, en_range, end, i, pair, range, ranges, start, words, _i, _j, _len, _len1;
+    ranges = [];
     for (i = _i = 0, _len = translated_pairs.length; _i < _len; i = ++_i) {
-      dic = translated_pairs[i];
-      for (idx = _j = _ref = dic[0][0], _ref1 = dic[0][1]; _ref <= _ref1 ? _j < _ref1 : _j > _ref1; idx = _ref <= _ref1 ? ++_j : --_j) {
-        words[idx].addClass('has_pair');
-        words[idx].attr('data-dict-entry-id', pId + '#' + i);
-        if (dic[1] !== null) {
-          words[idx].hover(highlight_dict_entry, unhighlight_dict_entry);
-        }
-      }
+      pair = translated_pairs[i];
+      en_range = [pair[0][0], pair[0][1]];
+      ranges.push([en_range, pId + '#' + i]);
     }
-    div_en = $('div[data-p-id=' + pId + '] div.en span.word-count');
-    _results = [];
-    for (_k = 0, _len1 = words.length; _k < _len1; _k++) {
-      w = words[_k];
-      _results.push(div_en.before(w));
+    words = original.slice(0);
+    for (_j = 0, _len1 = ranges.length; _j < _len1; _j++) {
+      range = ranges[_j];
+      start = range[0][0];
+      end = range[0][1];
+      words[start] = '<span class="has_pair" data-dict-entry-id="' + range[1] + '">' + words[start];
+      words[end] = '</span>' + words[end];
     }
-    return _results;
+    div_en = $('div[data-p-id=' + pId + '] div.en');
+    div_en.prepend('<p>' + words.join(' ') + '</p>');
+    return $('div[data-p-id=' + pId + '] span.has_pair').hover(highlight_dict_entry, unhighlight_dict_entry);
   };
 
   build_ja_part = function(pId, original, translated_pairs) {
-    var dic, div_ja, i, idx, w, words, _i, _j, _k, _len, _len1, _ref, _ref1, _results;
-    words = words_to_spans(pId, original);
+    var div_en, en_range, end, i, pair, range, ranges, start, words, _i, _j, _len, _len1;
+    ranges = [];
     for (i = _i = 0, _len = translated_pairs.length; _i < _len; i = ++_i) {
-      dic = translated_pairs[i];
-      if (dic[1] === null) {
+      pair = translated_pairs[i];
+      if (pair[1] === null) {
         continue;
       }
-      for (idx = _j = _ref = dic[1][0], _ref1 = dic[1][1]; _ref <= _ref1 ? _j < _ref1 : _j > _ref1; idx = _ref <= _ref1 ? ++_j : --_j) {
-        words[idx].addClass('has_pair');
-        words[idx].attr('data-dict-entry-id', pId + '#' + i);
-        words[idx].hover(highlight_dict_entry, unhighlight_dict_entry);
-      }
+      en_range = [pair[1][0], pair[1][1]];
+      ranges.push([en_range, pId + '#' + i]);
     }
-    div_ja = $('div[data-p-id=' + pId + '] div.ja div.display p');
-    _results = [];
-    for (_k = 0, _len1 = words.length; _k < _len1; _k++) {
-      w = words[_k];
-      _results.push(div_ja.append(w));
+    words = original.slice(0);
+    for (_j = 0, _len1 = ranges.length; _j < _len1; _j++) {
+      range = ranges[_j];
+      start = range[0][0];
+      end = range[0][1];
+      words[start] = '<span class="has_pair" data-dict-entry-id="' + range[1] + '">' + words[start];
+      words[end] = '</span>' + words[end];
     }
-    return _results;
+    div_en = $('div[data-p-id=' + pId + '] div.ja div.display');
+    div_en.prepend('<p>' + words.join('') + '</p>');
+    return $('div[data-p-id=' + pId + '] span.has_pair').hover(highlight_dict_entry, unhighlight_dict_entry);
   };
 
   apply_glossary_to_paragraph = function(pId) {
-    var paragraph;
+    var entry, i, paragraph, word, words, _i, _len, _results;
     paragraph = new view.Paragraph(pId);
     $('div[data-p-id=' + pId + '] div.glossary').html('');
     $('div[data-p-id=' + pId + '] div.editor_glossary').html('');
-    return $('div[data-p-id=' + pId + '] div.en span').each(function() {
-      var entry, head_text, wId, _i, _len, _ref, _results;
-      head_text = $(this).text().trim();
-      wId = $(this).data('wId');
-      _ref = glossary.entries_for_head(head_text);
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        entry = _ref[_i];
-        _results.push((function(entry) {
-          var words;
-          words = paragraph.en_words(wId, entry.split(' ').length);
-          if (words === entry) {
-            return paragraph.add_glossary_entry(words, glossary.entry(words));
-          }
-        })(entry));
-      }
-      return _results;
-    });
+    words = $('div[data-p-id=' + pId + '] div.en p').text().split(' ');
+    _results = [];
+    for (i = _i = 0, _len = words.length; _i < _len; i = ++_i) {
+      word = words[i];
+      word = word.trim();
+      _results.push((function() {
+        var _j, _len1, _ref, _results1;
+        _ref = glossary.entries_for_head(word);
+        _results1 = [];
+        for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+          entry = _ref[_j];
+          _results1.push((function(entry) {
+            var ws;
+            ws = words.slice(i, i + entry.split(' ').length).join(' ');
+            if (ws === entry) {
+              return paragraph.add_glossary_entry(ws, glossary.entry(ws));
+            }
+          })(entry));
+        }
+        return _results1;
+      })());
+    }
+    return _results;
   };
 
   render_paragraph = function(data) {

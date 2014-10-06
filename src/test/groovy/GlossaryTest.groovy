@@ -23,9 +23,9 @@ class GlossaryTest extends GebReportingTest {
         at TextPage
         editAndSave(0, "翻訳文です。")
 
-        selectEnText(0, 0, 0)
+        selectEnText(0, 0, 50)
         assert glossary_en.text() == 'English'
-        selectJaText(0, 0, 1)
+        selectJaText(0, 0, 20)
         assert glossary_ja.text() == '翻訳'
         glossary_register.click()
         report()
@@ -51,15 +51,15 @@ class GlossaryTest extends GebReportingTest {
         at TextPage
         editAndSave(0, "翻訳文です。")
 
-        selectEnText(0, 0, 0)
+        selectEnText(0, 0, 50)
         assert glossary_en.text() == 'English'
-        selectJaText(0, 0, 1)
+        selectJaText(0, 0, 20)
         assert glossary_ja.text() == '翻訳'
         glossary_register.click()
 
-        selectEnText(0, 0, 1)
+        selectEnText(0, 0, 120)
         assert glossary_en.text() == 'English Paragraph'
-        selectJaText(0, 0, 2)
+        selectJaText(0, 0, 35)
         assert glossary_ja.text() == '翻訳文'
         glossary_register.click()
         report()
@@ -87,9 +87,9 @@ class GlossaryTest extends GebReportingTest {
         at TextPage
         editAndSave(1, "翻訳文です。2行目。3行目。")
 
-        selectEnText(1, 3, 0)
+        selectEnText(1, 145, 25)
         assert glossary_en.text() == 'Line'
-        selectJaText(1, 7, 1)
+        selectJaText(1, 90, 20)
         assert glossary_ja.text() == '行目'
         report()
         glossary_register.click()

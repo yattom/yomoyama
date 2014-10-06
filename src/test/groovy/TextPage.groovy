@@ -24,20 +24,20 @@ class TextPage extends Page {
         waitFor { translation_textbox[idx].displayed == false }
     }
 
-    void selectEnText(paragraphId, from, len) {
+    void selectEnText(paragraphId, from, width) {
         interact {
-            moveToElement($('div.paragraph[data-p-id="' + paragraphId + '"] div.en span[data-w-id="' + from + '"]'), 0, 0)
+            moveToElement($('div.paragraph[data-p-id="' + paragraphId + '"] div.en p'), from, 0)
             clickAndHold()
-            moveToElement($('div.paragraph[data-p-id="' + paragraphId + '"] div.en span[data-w-id="' + (from + len + 1) + '"]'), -1, 0)
+            moveByOffset(width, 1)
             release()
         }
     }
 
-    void selectJaText(paragraphId, from, len) {
+    void selectJaText(paragraphId, from, width) {
         interact {
-            moveToElement($('div.paragraph[data-p-id="' + paragraphId + '"] div.ja span[data-w-id="' + from + '"]'), 0, 0)
+            moveToElement($('div.paragraph[data-p-id="' + paragraphId + '"] div.ja p'), from, 0)
             clickAndHold()
-            moveToElement($('div.paragraph[data-p-id="' + paragraphId + '"] div.ja span[data-w-id="' + (from + len + 1) + '"]'), -1, 0)
+            moveByOffset(width, 1)
             release()
         }
     }
