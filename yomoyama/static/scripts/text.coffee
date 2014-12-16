@@ -98,8 +98,8 @@ view =
       edit = $("<div>#{ words } </div>")
       btn = $("<button>#{translation}</button>")
       btn.click ->
-        t = $('div[data-p-id=' + pid + '] div.ja textarea').text()
-        $('div[data-p-id=' + pid + '] div.ja textarea').text(t + translation)
+        t = $('div[data-p-id=' + pid + '] div.ja textarea').val()
+        $('div[data-p-id=' + pid + '] div.ja textarea').val(t + translation)
       edit.append(btn)
       $('div[data-p-id=' + pid + '] div.editor_glossary').append(edit)
 

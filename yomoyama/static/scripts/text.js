@@ -151,8 +151,8 @@
         btn = $("<button>" + translation + "</button>");
         btn.click(function() {
           var t;
-          t = $('div[data-p-id=' + pid + '] div.ja textarea').text();
-          return $('div[data-p-id=' + pid + '] div.ja textarea').text(t + translation);
+          t = $('div[data-p-id=' + pid + '] div.ja textarea').val();
+          return $('div[data-p-id=' + pid + '] div.ja textarea').val(t + translation);
         });
         edit.append(btn);
         return $('div[data-p-id=' + pid + '] div.editor_glossary').append(edit);
