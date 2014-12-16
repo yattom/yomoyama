@@ -17,6 +17,10 @@ class TextPage extends Page {
         glossary_for_paragraph { $('div.paragraph div.glossary') }
     }
 
+    def glossaryButton(text) {
+        return $('button', text: text)
+    }
+
     void editAndSave(idx, txt) {
         edit[idx].click()
         translation_textbox[idx].value(txt)
@@ -40,6 +44,16 @@ class TextPage extends Page {
             moveByOffset(width, 1)
             release()
         }
+    }
+
+    void registerGlossaryEntry(paragraphId, enFrom, enWidth, enText, jaFrom, jaWidth, jaText) {
+        selectEnText(paragraphId, enFrom, enWidth)
+        selectJaText(paragraphId, jaFrom, jaWidth)
+        glossary_register.click()
+
+        driver.navigate().refresh()
+
+        waitFor { glossary_for_paragraph[paragraphId].text().contains(enText + ' : ' + jaText) }
     }
 }
 

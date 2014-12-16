@@ -100,5 +100,31 @@ class GlossaryTest extends GebReportingTest {
         report()
 
     }
+
+    @Test
+    void UseGlossaryToEnterTranslationText() {
+        to TopPage
+        newBookLink.click()
+
+        at NewBookPage
+        page.registerBook('GlossaryTest4', System.getenv('ORIGINAL_REPO_URL'), 'work_test')
+
+        to TopPage
+        bookByTitle('GlossaryTest4').click()
+        waitFor { at FilesPage }
+
+        files[0].click()
+        at TextPage
+        editAndSave(0, "翻訳文です。")
+
+        registerGlossaryEntry(0, 0, 50, 'English', 0, 20, '翻訳')
+        edit[0].click()
+        translation_textbox[0].value('これは')
+        report()
+        glossaryButton('翻訳').click()
+        report()
+        assert translation_textbox[0].value() == "これは翻訳"
+    }
+
 }
 
