@@ -49,6 +49,24 @@ textarea {
     color: gray;
 }
 
+span.save {
+	display: block;
+	background-image: url(/static/images/save.png);
+	background-position: 0px 0px;
+	cursor: pointer;
+	width: 52px;
+	height: 20px;
+	color: rgba(0, 0, 0, 0);
+}
+
+span.save:hover {
+	background-position: 0px -20px;
+}
+
+span.save:active {
+	background-position: 0px 20px;
+}
+
 span.has_pair {
     color: red;
 }
