@@ -45,10 +45,6 @@ textarea {
     cursor: wait;
 }
 
-.saving span.save {
-    color: gray;
-}
-
 span.save {
 	display: block;
 	background-image: url(/static/images/save.png);
