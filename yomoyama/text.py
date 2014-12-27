@@ -81,7 +81,7 @@ class Text(object):
 
     @staticmethod
     def is_translated(line):
-        return re.search(u'[^ \[\]\'"0-9a-zA-Z+._,*&?!:;/$()=#\u2013\u2014\u2018\u2019\u201c\u201d\u005b\u2022\u2026-]', line.strip()) is not None
+        return re.search(u'[^ \[\]\'"0-9a-zA-Z+._,*&?!:;/$()=#\u00d7\u2013\u2014\u2018\u2019\u201c\u201d\u005b\u2022\u2026-]', line.strip()) is not None
 
     def save(self):
         with open(self.path, 'wb', encoding='utf8') as f:
