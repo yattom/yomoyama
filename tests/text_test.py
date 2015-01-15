@@ -282,3 +282,19 @@ class TextIsTranslatedTest(unittest.TestCase):
     def test_quotes(self):
         assert_that(text.Text.is_translated(u'"\'“”’'), is_(False))
 
+
+class TextExportTranslatedTest(unittest.TestCase):
+
+    def test_export_translated(self):
+        t = load_data('multi_para')
+        lines = t.export_translated()
+        assert_that(lines, is_([u'日本語の行\n', u'']))
+
+    def test_export_translated_many_para(self):
+        t = load_data('many_para')
+        lines = t.export_translated()
+        assert_that(lines, is_([
+            u'日本語の段落1。\n',
+            u'',
+            u'日本語の段落1。\n日本語部分が複数行。\n',
+            u'日本語の段落4。日本語部分のみ。\n']))

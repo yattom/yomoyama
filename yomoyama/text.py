@@ -87,6 +87,12 @@ class Text(object):
         with open(self.path, 'wb', encoding='utf8') as f:
             f.write(self.data)
 
+    def export_translated(self):
+        translated = []
+        for para in self.paragraphs:
+            translated.append(para.translated().value())
+        return translated
+
     def fragment(self, head, tail):
         f = TextFragment(self, head, tail)
         self.fragments.append(f)
