@@ -1,4 +1,4 @@
-#coding: utf-8
+# coding: utf-8
 
 import os
 import unittest
@@ -6,6 +6,7 @@ import tempfile
 from hamcrest import *
 
 from yomoyama import text
+
 
 def assert_load_and_save(name, message=None):
     t = load_data(name)
@@ -34,10 +35,12 @@ def load_data(name):
     finally:
         f.unlink(f.name)
 
+
 def block_to_str(data, lines, blocks):
     ps = [range(s, e + 1) for (s, e) in blocks]
     strs = [[data[lines[i][0]:lines[i][1]] for i in ls] for ls in ps]
     return [''.join(s) for s in strs]
+
 
 def assert_reloaded_text_is_same(t):
     try:
@@ -101,7 +104,9 @@ English Part. Trailing SPC and TAB.
 '''.encode('utf-8'), 'Leading/Trailing SPC and TAB must remain'),
 }
 
+
 class TextTest(unittest.TestCase):
+
     def test_load_multi_para(self):
         t = load_data('multi_para')
         assert_that(len(t.paragraphs), is_(2))
@@ -187,13 +192,11 @@ class TextTest(unittest.TestCase):
 
     def test_update_translated_with_blankline(self):
         t = load_data('multi_para')
-        before_data = t.data[:]
         t.paragraphs[0].translated().update(u'空行前。\n\n次は空白入り空行。\n  \n空行後。\n')
         assert_that(t.paragraphs[0].translated(), is_(u'空行前。\n次は空白入り空行。\n空行後。\n'), 'blank lines are removed')
 
     def test_update_translated_whitespaces_must_retained(self):
         t = load_data('multi_para')
-        before_data = t.data[:]
         t.paragraphs[0].translated().update(u'  行頭空白\n行末空白  \n \t TABも\t  \n')
         assert_that(t.paragraphs[0].translated(), is_(u'  行頭空白\n行末空白  \n \t TABも\t  \n'))
 
@@ -239,7 +242,9 @@ class TextTest(unittest.TestCase):
         paragraph.original().update(u'Modified')
         assert_that(paragraph.id, is_(id_before))
 
+
 class TextWordCountTest(unittest.TestCase):
+
     def test_words(self):
         t = load_data('many_para')
         assert_that(t.paragraphs[0].words, is_(7))
@@ -251,7 +256,9 @@ class TextWordCountTest(unittest.TestCase):
         assert_that(t.paragraphs[3].words, is_(0))
         assert_that(t.paragraphs[3].words_so_far, is_(7 + 6 + 3 + 0))
 
-class TextIsTranslated(unittest.TestCase):
+
+class TextIsTranslatedTest(unittest.TestCase):
+
     def test_english(self):
         assert_that(text.Text.is_translated('The quick brown fox jumps over a lazy dog.'), is_(False))
 
