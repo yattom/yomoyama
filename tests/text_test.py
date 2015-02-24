@@ -282,6 +282,9 @@ class TextIsTranslatedTest(unittest.TestCase):
     def test_quotes(self):
         assert_that(text.Text.is_translated(u'"\'“”’'), is_(False))
 
+    def test_marks(self):
+        assert_that(text.Text.is_translated(u'Nuño'), is_(False))
+
 
 class TextExportTranslatedTest(unittest.TestCase):
 
